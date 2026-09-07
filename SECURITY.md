@@ -45,6 +45,30 @@ The threat model is *a hostile package handed to the analyzer*. In scope:
 - The intentionally-vulnerable demo app under `tests/fixtures/`. It is meant to
   be insecure and is never executed.
 
+## The credentials in `tests/fixtures/` are synthetic
+
+A tool that detects hardcoded secrets needs fixtures containing secret-shaped
+strings, so `tests/fixtures/` is full of them. **None of them are real.** They
+are drawn from vendor documentation and obvious filler:
+
+- `AKIAIOSFODNN7EXAMPLE` and `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY` are
+  AWS's own published example keys — the analyzer deliberately does *not*
+  report the first one, and `test_analyzers_android.py` asserts that.
+- The Stripe keys use Stripe's documented test prefix and an alphabet body
+  (`…abcdefghijklmnopqrs…`).
+- The GitHub tokens are ascending and descending alphabet patterns.
+- The Google API key has `ExAmPlE` spelled into it.
+- The Slack webhook is Slack's placeholder, `T00000000/B00000000/XXXX…`.
+- The rest are jokes or filler (`hunter2-…`, `0123456789abcdef…`).
+
+There is nothing here to rotate, and reports about them will be closed.
+
+### If GitHub push protection blocks your fork
+
+Expect it to — the strings are meant to look like credentials. Allow each
+detection with **"It's used in tests"** rather than disabling push protection
+for the repository, so a genuine leak is still caught later.
+
 ## Supported versions
 
 The latest released version receives fixes. See [CHANGELOG.md](CHANGELOG.md).
