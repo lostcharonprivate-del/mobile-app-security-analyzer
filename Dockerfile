@@ -3,7 +3,7 @@
 # The analyzer works with no external tooling at all — the DEX, AXML, ARSC and
 # Mach-O readers are pure Python. This image exists so that apktool and jadx are
 # available too, without asking anyone to hand-install reverse-engineering tools.
-FROM python:3.12-slim-bookworm
+FROM python:3.14-slim-bookworm
 
 ARG APKTOOL_VERSION=2.9.3
 ARG JADX_VERSION=1.5.0
