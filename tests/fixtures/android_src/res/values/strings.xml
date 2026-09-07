@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Vulnerable Demo</string>
+    <string name="backend_url">http://api.insecure-demo.example.com/v1</string>
+    <string name="google_api_key">AIzaSyD-1mLcVn8Qw3ExAmPlE7kJhGfDsA9zXcV</string>
+    <string name="slack_webhook_token">xoxb-24681357910-24681357911-A1b2C3d4E5f6G7h8I9j0KlMn</string>
+    <string name="db_password">Pr0d_D8_p4ssw0rd_do_not_ship</string>
+</resources>

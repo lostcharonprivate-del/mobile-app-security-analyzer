@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability in the analyzer itself
+    url: https://github.com/lostcharonprivate-del/mobile-app-security-analyzer/security/advisories/new
+    about: Report privately. Do not open a public issue — see SECURITY.md.
+  - name: Question about a finding
+    url: https://github.com/lostcharonprivate-del/mobile-app-security-analyzer/discussions
+    about: Ask how a rule works or what a finding means.

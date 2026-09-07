@@ -1,0 +1,38 @@
+# One-command analysis environment.
+#
+#   docker compose build
+#   docker compose run --rm masa scan /work/app.apk -f all -o /work/report
+#
+# `./workspace` on the host is mounted at /work in the container: drop the APK or
+# IPA in there and the reports are written back beside it.
+services:
+  masa:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mobile-app-security-analyzer:latest
+    volumes:
+      - ./workspace:/work
+    working_dir: /work
+    # The tool is offline by default; this makes that a property of the sandbox
+    # rather than only of the code. Comment it out to use `masa scan --online`.
+    network_mode: none
+    # Untrusted input plus third-party decompilers: give the container as little
+    # as it can run with.
+    read_only: true
+    tmpfs:
+      - /scratch:size=4g,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 512
+    mem_limit: 4g
+
+  # Same image with the network available, for `--online` OSV.dev lookups.
+  masa-online:
+    extends:
+      service: masa
+    network_mode: bridge
+    profiles:
+      - online

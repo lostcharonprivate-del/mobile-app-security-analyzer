@@ -1,0 +1,40 @@
+name: False positive or false negative
+description: A rule fired on safe code, or missed something it should have caught.
+labels: [rule-accuracy]
+body:
+  - type: input
+    id: rule
+    attributes:
+      label: Rule ID
+      description: The ID shown in the report, e.g. CRY-ECB-MODE. `masa rules` lists them all.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Which is it
+      options:
+        - False positive — fired on code that is actually safe
+        - False negative — missed a real issue
+    validations:
+      required: true
+
+  - type: textarea
+    id: code
+    attributes:
+      label: Minimal code that reproduces it
+      description: The smallest source or manifest snippet that triggers the behaviour.
+      render: java
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why the current result is wrong
+      description: |
+        For a false positive, what makes this usage safe. For a false negative,
+        what the rule would have to see to catch it.
+    validations:
+      required: true

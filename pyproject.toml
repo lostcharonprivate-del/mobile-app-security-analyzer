@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mobile-app-security-analyzer"
+version = "1.0.0"
+description = "Static security analysis for Android APKs and iOS IPAs, mapped to OWASP Mobile Top 10 (2024) and MASVS"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+keywords = ["android", "ios", "apk", "ipa", "security", "static-analysis", "owasp", "masvs"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Topic :: Security",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+  "typer>=0.12",
+  "rich>=13.7",
+  "jinja2>=3.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-cov>=5.0"]
+pdf = ["weasyprint>=62"]
+
+[project.scripts]
+masa = "masa.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/lostcharonprivate-del/mobile-app-security-analyzer"
+Repository = "https://github.com/lostcharonprivate-del/mobile-app-security-analyzer"
+Issues = "https://github.com/lostcharonprivate-del/mobile-app-security-analyzer/issues"
+Changelog = "https://github.com/lostcharonprivate-del/mobile-app-security-analyzer/blob/main/CHANGELOG.md"
+
+[tool.setuptools.packages.find]
+include = ["masa*"]
+
+[tool.setuptools.package-data]
+masa = ["report/templates/*.j2"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = [
+  "slow: tests that build fixtures with the Android SDK",
+  "network: tests that reach the network (OSV.dev)",
+]

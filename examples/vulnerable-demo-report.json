@@ -1,0 +1,1750 @@
+{
+  "schema_version": "1.0",
+  "tool": {
+    "name": "mobile-app-security-analyzer",
+    "version": "1.0.0"
+  },
+  "generated_at": "2026-09-07T00:04:09.332027+00:00",
+  "app": {
+    "platform": "android",
+    "file_name": "vulnerable-demo.apk",
+    "file_size": 16949,
+    "sha256": "6d2e1625d6055de107569f0765b54ae42cd30dc2bd7c1fa15fd0f73f6a42aa71",
+    "package_name": "com.masa.vulnerable",
+    "version_name": "1.3.7",
+    "version_code": "42",
+    "min_sdk": "21",
+    "target_sdk": "34",
+    "min_os_version": null,
+    "permissions": [
+      "android.permission.ACCESS_FINE_LOCATION",
+      "android.permission.INTERNET",
+      "android.permission.READ_CONTACTS",
+      "android.permission.READ_EXTERNAL_STORAGE",
+      "android.permission.READ_PHONE_STATE",
+      "android.permission.READ_SMS",
+      "android.permission.RECORD_AUDIO",
+      "android.permission.REQUEST_INSTALL_PACKAGES",
+      "android.permission.WRITE_EXTERNAL_STORAGE"
+    ],
+    "components": {
+      "activity": [
+        {
+          "name": ".MainActivity",
+          "exported": true,
+          "permission": null,
+          "read_permission": null,
+          "write_permission": null,
+          "authorities": null,
+          "intent_filters": 1
+        },
+        {
+          "name": ".DeepLinkActivity",
+          "exported": true,
+          "permission": null,
+          "read_permission": null,
+          "write_permission": null,
+          "authorities": null,
+          "intent_filters": 1
+        },
+        {
+          "name": ".AdminActivity",
+          "exported": true,
+          "permission": null,
+          "read_permission": null,
+          "write_permission": null,
+          "authorities": null,
+          "intent_filters": 0
+        }
+      ],
+      "service": [
+        {
+          "name": ".ExportedService",
+          "exported": true,
+          "permission": null,
+          "read_permission": null,
+          "write_permission": null,
+          "authorities": null,
+          "intent_filters": 0
+        }
+      ],
+      "receiver": [
+        {
+          "name": ".ExportedReceiver",
+          "exported": true,
+          "permission": null,
+          "read_permission": null,
+          "write_permission": null,
+          "authorities": null,
+          "intent_filters": 1
+        }
+      ],
+      "provider": [
+        {
+          "name": ".LeakyProvider",
+          "exported": true,
+          "permission": null,
+          "read_permission": null,
+          "write_permission": null,
+          "authorities": "com.masa.vulnerable.provider",
+          "intent_filters": 0
+        },
+        {
+          "name": ".GuardedProvider",
+          "exported": true,
+          "permission": null,
+          "read_permission": "com.masa.vulnerable.permission.READ",
+          "write_permission": null,
+          "authorities": "com.masa.vulnerable.guarded",
+          "intent_filters": 0
+        }
+      ]
+    },
+    "signing": {
+      "schemes": [
+        "v1 (JAR signing)",
+        "v2 (APK Signature Scheme v2)",
+        "v3 (APK Signature Scheme v3)",
+        "v4 (APK Signature Scheme v4, from sibling .idsig)"
+      ],
+      "v1_only": false,
+      "unsigned": false,
+      "certificates": [
+        {
+          "file": "META-INF/MASATEST.RSA",
+          "certificate_sha256": "9244eec91584a1ef4d706658a2f831be6e3982c6e7d1a90f985ee7ef203cd704",
+          "pkcs7_sha256": "6173570868e9795c6379cf485eeb49d7b5a64ce28e8a8f38b1c170906d54fa38",
+          "signature_algorithms": [
+            "sha256WithRSA"
+          ],
+          "weak_signature_algorithm": false,
+          "common_name": "MASA Test Fixture",
+          "debug_certificate": false
+        }
+      ]
+    },
+    "libraries": [],
+    "extra": {
+      "native_libraries": [],
+      "dex_files": [
+        "classes.dex"
+      ],
+      "archive_entries": 8,
+      "score_breakdown": {
+        "raw": 268.15,
+        "score": 100.0,
+        "grade": "F",
+        "grade_label": "Critical issues; do not ship in this state",
+        "severity_counts": {
+          "Critical": 10,
+          "High": 19,
+          "Medium": 14,
+          "Low": 4,
+          "Info": 0
+        },
+        "capped_rules": []
+      }
+    }
+  },
+  "risk": {
+    "score": 100.0,
+    "grade": "F",
+    "severity_counts": {
+      "Critical": 10,
+      "High": 19,
+      "Medium": 14,
+      "Low": 4,
+      "Info": 0
+    }
+  },
+  "findings": [
+    {
+      "rule_id": "SEC-AWS-AKID",
+      "fingerprint": "260f29ec09fe7687",
+      "title": "AWS access key ID hardcoded in the package (AKIA************VC)",
+      "severity": "Critical",
+      "confidence": "High",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-798",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "A value matching the AWS access key ID pattern is embedded in the shipped package and was found in 2 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access. AWS access key IDs are paired with a secret key; both are usually shipped together.",
+      "remediation": "Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.",
+      "references": [
+        "https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage",
+        "https://cwe.mitre.org/data/definitions/798.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.MainActivity.AWS_ACCESS_KEY [MainActivity.java]",
+          "line": null,
+          "snippet": "AKIA************VC"
+        },
+        {
+          "location": "com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]",
+          "line": null,
+          "snippet": "aws key AKIA************VC secret wJal************LE"
+        }
+      ],
+      "metadata": {
+        "secret_length": 20,
+        "match_count": 2
+      }
+    },
+    {
+      "rule_id": "SEC-AWS-SECRET",
+      "fingerprint": "c631dd46706ffa1f",
+      "title": "AWS secret access key hardcoded in the package (wJal************EY)",
+      "severity": "Critical",
+      "confidence": "High",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-798",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "A value matching the AWS secret access key pattern is embedded in the shipped package and was found in 1 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access.",
+      "remediation": "Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.",
+      "references": [
+        "https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage",
+        "https://cwe.mitre.org/data/definitions/798.html"
+      ],
+      "evidence": [
+        {
+          "location": "assets/config.properties:3",
+          "line": null,
+          "snippet": "aws_secret_access_key=wJal************EY"
+        }
+      ],
+      "metadata": {
+        "secret_length": 40,
+        "match_count": 1
+      }
+    },
+    {
+      "rule_id": "SEC-GITHUB-PAT",
+      "fingerprint": "793733347d4c8ff1",
+      "title": "GitHub token hardcoded in the package (ghp_************Yz)",
+      "severity": "Critical",
+      "confidence": "High",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-798",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "A value matching the GitHub token pattern is embedded in the shipped package and was found in 2 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access.",
+      "remediation": "Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.",
+      "references": [
+        "https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage",
+        "https://cwe.mitre.org/data/definitions/798.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.MainActivity.GITHUB_TOKEN [MainActivity.java]",
+          "line": null,
+          "snippet": "ghp_************Yz"
+        },
+        {
+          "location": "com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]",
+          "line": null,
+          "snippet": "github ghp_************Yz stripe sk_l************TU blob Zq7X2pLm9Rt4Wv8Ky3Nc6Bd1Hj5Fg0Sa"
+        }
+      ],
+      "metadata": {
+        "secret_length": 40,
+        "match_count": 2
+      }
+    },
+    {
+      "rule_id": "SEC-PRIVATE-KEY",
+      "fingerprint": "f6306c727bda00f8",
+      "title": "Private key material hardcoded in the package (----************--)",
+      "severity": "Critical",
+      "confidence": "High",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-321",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "A value matching the Private key material pattern is embedded in the shipped package and was found in 1 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access. A private key inside the package is available to every user of the app.",
+      "remediation": "Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.",
+      "references": [
+        "https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage",
+        "https://cwe.mitre.org/data/definitions/798.html"
+      ],
+      "evidence": [
+        {
+          "location": "assets/signing_key.pem:1",
+          "line": null,
+          "snippet": "----************--"
+        }
+      ],
+      "metadata": {
+        "secret_length": 31,
+        "match_count": 1
+      }
+    },
+    {
+      "rule_id": "SEC-STRIPE",
+      "fingerprint": "b1a587223fa744a1",
+      "title": "Stripe secret key hardcoded in the package (sk_l************TU)",
+      "severity": "Critical",
+      "confidence": "High",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-798",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "A value matching the Stripe secret key pattern is embedded in the shipped package and was found in 3 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access.",
+      "remediation": "Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.",
+      "references": [
+        "https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage",
+        "https://cwe.mitre.org/data/definitions/798.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]",
+          "line": null,
+          "snippet": "github ghp_************Yz stripe sk_l************TU blob Zq7X2pLm9Rt4Wv8Ky3Nc6Bd1Hj5Fg0Sa"
+        },
+        {
+          "location": "com.masa.vulnerable.MainActivity.STRIPE_KEY [MainActivity.java]",
+          "line": null,
+          "snippet": "sk_l************TU"
+        },
+        {
+          "location": "assets/config.properties:4",
+          "line": null,
+          "snippet": "stripe_secret=sk_l************TU"
+        }
+      ],
+      "metadata": {
+        "secret_length": 45,
+        "match_count": 3
+      }
+    },
+    {
+      "rule_id": "WEB-UNIVERSAL-ACCESS-FROM-FILE-URLS",
+      "fingerprint": "81633398d0f9d4ed",
+      "title": "WebView enables file:// pages reading any origin",
+      "severity": "Critical",
+      "confidence": "High",
+      "owasp": {
+        "id": "M4",
+        "title": "Insufficient Input/Output Validation"
+      },
+      "cwe": "CWE-749",
+      "masvs": "MASVS-PLATFORM",
+      "analyzer": "webview",
+      "description": "`setAllowUniversalAccessFromFileURLs(true)` is called on a WebView's settings. A page loaded from file:// can issue requests to any origin and read the responses, bypassing the same-origin policy entirely. Combined with any path an attacker can write to, this reads the app's private files and exfiltrates them.",
+      "remediation": "Call `setAllowUniversalAccessFromFileURLs(false)` unless a shipped feature depends on it. These settings default to permissive values on older API levels, so set them explicitly rather than relying on the default.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.WebViewActivity.onCreate() [WebViewActivity.java]",
+          "line": null,
+          "snippet": "setAllowUniversalAccessFromFileURLs(true)"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "NET-HOSTNAME-VERIFIER",
+      "fingerprint": "33a833aee89e24cf",
+      "title": "Hostname verification is disabled",
+      "severity": "Critical",
+      "confidence": "High",
+      "owasp": {
+        "id": "M5",
+        "title": "Insecure Communication"
+      },
+      "cwe": "CWE-297",
+      "masvs": "MASVS-NETWORK",
+      "analyzer": "network",
+      "description": "A `HostnameVerifier` returns true for every hostname. Certificate chain validation may still pass, but nothing checks that the certificate was issued for the host actually being contacted — so any valid certificate for any domain is accepted, and an attacker needs only a legitimately-issued certificate for a domain they own.",
+      "remediation": "Remove the custom verifier and let the default implementation run. For a host whose certificate does not match its name, fix the certificate rather than the client.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/297.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.NetworkHelper$1.verify()",
+          "line": null,
+          "snippet": "verify() unconditionally returns true"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "NET-TRUSTMANAGER-ALLOW-ALL",
+      "fingerprint": "f026b017a6b271b6",
+      "title": "TrustManager accepts every certificate",
+      "severity": "Critical",
+      "confidence": "High",
+      "owasp": {
+        "id": "M5",
+        "title": "Insecure Communication"
+      },
+      "cwe": "CWE-295",
+      "masvs": "MASVS-NETWORK",
+      "analyzer": "network",
+      "description": "A class implementing `X509TrustManager` has an empty `checkServerTrusted`. An empty implementation raises no exception, which is how the API says \"this certificate is valid\" — so the app accepts any certificate from any server, including a self-signed one an attacker generates. TLS still encrypts the connection, but to whoever intercepted it: the confidentiality and authentication guarantees are both gone, silently.",
+      "remediation": "Delete the custom TrustManager and use the platform default. If a private CA must be trusted, add it as a trust anchor in the network security config instead of writing validation code. Never ship the permissive version that was added to make a staging certificate work.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/295.html",
+        "https://developer.android.com/privacy-and-security/security-ssl"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.NetworkHelper$TrustEverything.checkClientTrusted()",
+          "line": null,
+          "snippet": "checkClientTrusted has an empty body — accepts any certificate"
+        },
+        {
+          "location": "com.masa.vulnerable.NetworkHelper$TrustEverything.checkServerTrusted()",
+          "line": null,
+          "snippet": "checkServerTrusted has an empty body — accepts any certificate"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "MAN-DEBUGGABLE",
+      "fingerprint": "8d2ef9118b778e61",
+      "title": "Application is marked debuggable",
+      "severity": "Critical",
+      "confidence": "High",
+      "owasp": {
+        "id": "M8",
+        "title": "Security Misconfiguration"
+      },
+      "cwe": "CWE-489",
+      "masvs": "MASVS-RESILIENCE",
+      "analyzer": "manifest",
+      "description": "`android:debuggable=\"true\"` is set on <application>. On any device, anyone who can reach ADB can attach a debugger to this process, read and modify its memory, call its methods and extract whatever it holds — including keys the app decrypts at runtime. It also lets `run-as` read the app's private data directory without root.",
+      "remediation": "Remove `android:debuggable` from the manifest entirely. The Android build system sets it automatically for debug builds, so it should never be written by hand in a release manifest.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/489.html"
+      ],
+      "evidence": [
+        {
+          "location": "AndroidManifest.xml",
+          "line": 19,
+          "snippet": "android:debuggable=\"true\""
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "STO-WORLD-WRITABLE",
+      "fingerprint": "80a786de379d5a02",
+      "title": "App data is created world-writable",
+      "severity": "Critical",
+      "confidence": "High",
+      "owasp": {
+        "id": "M9",
+        "title": "Insecure Data Storage"
+      },
+      "cwe": "CWE-732",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "storage",
+      "description": "Files or preferences are created with `MODE_WORLD_WRITEABLE`. Any other app on the device can overwrite them. If the app reads configuration, a cached URL or a serialized object back out of such a file, another app controls that input — which turns a storage permission problem into code the app trusts from an untrusted source.",
+      "remediation": "Use `MODE_PRIVATE` and treat any externally-writable input as untrusted if it cannot be removed.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/732.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]",
+          "line": null,
+          "snippet": "getSharedPreferences(…, MODE_WORLD_WRITEABLE)"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "SEC-GCP-APIKEY",
+      "fingerprint": "097ae70ed3aa3e36",
+      "title": "Google API key hardcoded in the package (AIza************cV)",
+      "severity": "High",
+      "confidence": "High",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-798",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "A value matching the Google API key pattern is embedded in the shipped package and was found in 2 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access. Unrestricted Google API keys can be billed against by anyone who extracts them.",
+      "remediation": "Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.",
+      "references": [
+        "https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage",
+        "https://cwe.mitre.org/data/definitions/798.html"
+      ],
+      "evidence": [
+        {
+          "location": "res/values/strings.xml:google_api_key",
+          "line": null,
+          "snippet": "AIza************cV"
+        },
+        {
+          "location": "resources.arsc (value pool)",
+          "line": null,
+          "snippet": "AIza************cV"
+        }
+      ],
+      "metadata": {
+        "secret_length": 39,
+        "match_count": 2
+      }
+    },
+    {
+      "rule_id": "SEC-JWT",
+      "fingerprint": "bae9d37bc1b55d1b",
+      "title": "JSON Web Token hardcoded in the package (eyJh************8U)",
+      "severity": "High",
+      "confidence": "High",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-522",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "A value matching the JSON Web Token pattern is embedded in the shipped package and was found in 2 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access. A shipped JWT is a bearer credential; anyone holding it is that user until it expires.",
+      "remediation": "Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.",
+      "references": [
+        "https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage",
+        "https://cwe.mitre.org/data/definitions/798.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]",
+          "line": null,
+          "snippet": "eyJh************8U"
+        },
+        {
+          "location": "com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]",
+          "line": null,
+          "snippet": "session token=eyJh************8U"
+        }
+      ],
+      "metadata": {
+        "secret_length": 108,
+        "match_count": 2
+      }
+    },
+    {
+      "rule_id": "SEC-SLACK-TOKEN",
+      "fingerprint": "790ad4bf4255236b",
+      "title": "Slack token hardcoded in the package (xoxb************Mn)",
+      "severity": "High",
+      "confidence": "High",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-798",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "A value matching the Slack token pattern is embedded in the shipped package and was found in 2 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access.",
+      "remediation": "Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.",
+      "references": [
+        "https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage",
+        "https://cwe.mitre.org/data/definitions/798.html"
+      ],
+      "evidence": [
+        {
+          "location": "res/values/strings.xml:slack_webhook_token",
+          "line": null,
+          "snippet": "xoxb************Mn"
+        },
+        {
+          "location": "resources.arsc (value pool)",
+          "line": null,
+          "snippet": "xoxb************Mn"
+        }
+      ],
+      "metadata": {
+        "secret_length": 53,
+        "match_count": 2
+      }
+    },
+    {
+      "rule_id": "MAN-EXPORTED-ACTIVITY",
+      "fingerprint": "2dd066a160fcd2f1",
+      "title": "Exported activity with no permission check (2)",
+      "severity": "High",
+      "confidence": "High",
+      "owasp": {
+        "id": "M3",
+        "title": "Insecure Authentication/Authorization"
+      },
+      "cwe": "CWE-926",
+      "masvs": "MASVS-PLATFORM",
+      "analyzer": "manifest",
+      "description": "2 activity component(s) are exported without an `android:permission` attribute. Any other app installed on the device — including one the user installed by accident — can start them directly and supply arbitrary Intent extras. If the component performs a privileged action, or trusts data from the Intent, that is a way in that bypasses the app's own UI and whatever authentication it does.",
+      "remediation": "Set `android:exported=\"false\"` on anything that does not need to be reachable from other apps. Where it must stay exported, guard it with a signature-level `android:permission` and validate every value read from the incoming Intent.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/926.html",
+        "https://developer.android.com/guide/topics/manifest/activity-element#exported"
+      ],
+      "evidence": [
+        {
+          "location": "AndroidManifest.xml",
+          "line": 32,
+          "snippet": "<activity android:name=\".DeepLinkActivity\" android:exported=\"true\"> with no android:permission"
+        },
+        {
+          "location": "AndroidManifest.xml",
+          "line": 41,
+          "snippet": "<activity android:name=\".AdminActivity\" android:exported=\"true\"> with no android:permission"
+        }
+      ],
+      "metadata": {
+        "component_kind": "activity",
+        "count": 2
+      }
+    },
+    {
+      "rule_id": "MAN-EXPORTED-PROVIDER",
+      "fingerprint": "de9d8c798e427592",
+      "title": "Content provider is exported without a permission",
+      "severity": "High",
+      "confidence": "High",
+      "owasp": {
+        "id": "M3",
+        "title": "Insecure Authentication/Authorization"
+      },
+      "cwe": "CWE-926",
+      "masvs": "MASVS-PLATFORM",
+      "analyzer": "manifest",
+      "description": "The content provider `.LeakyProvider` (authority `com.masa.vulnerable.provider`) is exported and no read or write permission guards it. Any app on the device can query, insert into and delete from whatever it exposes. Providers usually sit directly on top of the app's database, so this is often equivalent to handing out the app's stored data.",
+      "remediation": "Set `android:exported=\"false\"` unless other apps genuinely need this data. If they do, declare `android:readPermission` and `android:writePermission`, and make the provider's own query handling parameterise every selection argument.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "AndroidManifest.xml",
+          "line": 51,
+          "snippet": "<provider android:name=\".LeakyProvider\" android:authorities=\"com.masa.vulnerable.provider\" android:exported=\"true\">"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "MAN-EXPORTED-SERVICE",
+      "fingerprint": "a43b009a42580601",
+      "title": "Exported service with no permission check (1)",
+      "severity": "High",
+      "confidence": "High",
+      "owasp": {
+        "id": "M3",
+        "title": "Insecure Authentication/Authorization"
+      },
+      "cwe": "CWE-926",
+      "masvs": "MASVS-PLATFORM",
+      "analyzer": "manifest",
+      "description": "1 service component(s) are exported without an `android:permission` attribute. Any other app installed on the device — including one the user installed by accident — can start them directly and supply arbitrary Intent extras. If the component performs a privileged action, or trusts data from the Intent, that is a way in that bypasses the app's own UI and whatever authentication it does.",
+      "remediation": "Set `android:exported=\"false\"` on anything that does not need to be reachable from other apps. Where it must stay exported, guard it with a signature-level `android:permission` and validate every value read from the incoming Intent.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/926.html",
+        "https://developer.android.com/guide/topics/manifest/activity-element#exported"
+      ],
+      "evidence": [
+        {
+          "location": "AndroidManifest.xml",
+          "line": 43,
+          "snippet": "<service android:name=\".ExportedService\" android:exported=\"true\"> with no android:permission"
+        }
+      ],
+      "metadata": {
+        "component_kind": "service",
+        "count": 1
+      }
+    },
+    {
+      "rule_id": "WEB-FILE-ACCESS-FROM-FILE-URLS",
+      "fingerprint": "38cb4fea91b147c1",
+      "title": "WebView enables file:// pages reading other files",
+      "severity": "High",
+      "confidence": "High",
+      "owasp": {
+        "id": "M4",
+        "title": "Insufficient Input/Output Validation"
+      },
+      "cwe": "CWE-749",
+      "masvs": "MASVS-PLATFORM",
+      "analyzer": "webview",
+      "description": "`setAllowFileAccessFromFileURLs(true)` is called on a WebView's settings. A page loaded from a file:// URL can read other files through XHR.",
+      "remediation": "Call `setAllowFileAccessFromFileURLs(false)` unless a shipped feature depends on it. These settings default to permissive values on older API levels, so set them explicitly rather than relying on the default.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.WebViewActivity.onCreate() [WebViewActivity.java]",
+          "line": null,
+          "snippet": "setAllowFileAccessFromFileURLs(true)"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "WEB-JS-INTERFACE",
+      "fingerprint": "9e07af3f32568a20",
+      "title": "WebView exposes a Java object to page JavaScript",
+      "severity": "High",
+      "confidence": "High",
+      "owasp": {
+        "id": "M4",
+        "title": "Insufficient Input/Output Validation"
+      },
+      "cwe": "CWE-749",
+      "masvs": "MASVS-PLATFORM",
+      "analyzer": "webview",
+      "description": "`addJavascriptInterface` binds a Java object into the WebView's JavaScript context. Whatever HTML the WebView ends up displaying — including a page reached through a redirect, an injected iframe, or an ad network — can call the annotated methods on that object with arguments of its choosing. On API 17+ only @JavascriptInterface-annotated methods are exposed, so the risk is bounded by what those methods do — but each one is an entry point callable by untrusted page content.",
+      "remediation": "Remove the bridge if the page content does not need it. If it does: load only content you control over HTTPS, keep the bridge object as small as possible, validate every argument, and never expose methods that touch the filesystem, credentials or other components. Prefer `WebMessagePort` for structured, origin-checked messaging.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/749.html",
+        "https://developer.android.com/reference/android/webkit/WebView#addJavascriptInterface(java.lang.Object,%20java.lang.String)"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.WebViewActivity.onCreate() [WebViewActivity.java]",
+          "line": null,
+          "snippet": "addJavascriptInterface(…)"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "NET-CLEARTEXT-FLAG",
+      "fingerprint": "9232ee807a4c3655",
+      "title": "Cleartext HTTP traffic is explicitly permitted",
+      "severity": "High",
+      "confidence": "High",
+      "owasp": {
+        "id": "M5",
+        "title": "Insecure Communication"
+      },
+      "cwe": "CWE-319",
+      "masvs": "MASVS-NETWORK",
+      "analyzer": "network",
+      "description": "`android:usesCleartextTraffic=\"true\"` is set, which re-enables unencrypted HTTP for the whole app. Android blocks cleartext by default from API 28 precisely because anyone sharing the network — a coffee-shop access point, a hostile ISP, someone with an ARP-spoofing tool — can read and rewrite that traffic in transit.",
+      "remediation": "Remove the attribute and serve every endpoint over HTTPS. If one legacy host genuinely cannot be migrated yet, allow just that domain in a network security config (`<domain-config cleartextTrafficPermitted=\"true\">`) rather than opening the whole app.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/319.html"
+      ],
+      "evidence": [
+        {
+          "location": "AndroidManifest.xml",
+          "line": 19,
+          "snippet": "android:usesCleartextTraffic=\"true\""
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "STO-WORLD-READABLE",
+      "fingerprint": "6fa0e1614c65b840",
+      "title": "App data is created world-readable",
+      "severity": "High",
+      "confidence": "High",
+      "owasp": {
+        "id": "M9",
+        "title": "Insecure Data Storage"
+      },
+      "cwe": "CWE-732",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "storage",
+      "description": "Files or preferences are created with `MODE_WORLD_READABLE`. That drops the per-app sandbox for those files: any other application on the device can open and read them. The mode was deprecated in API 17 and throws a SecurityException from API 24 onward, so on modern devices this is both a data leak on old installs and a crash on new ones.",
+      "remediation": "Use `MODE_PRIVATE`. Where data genuinely has to be shared with another app, expose it through a ContentProvider guarded by a signature permission, or a FileProvider URI grant.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/732.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]",
+          "line": null,
+          "snippet": "getSharedPreferences(…, MODE_WORLD_READABLE)"
+        },
+        {
+          "location": "com.masa.vulnerable.StorageHelper.writeToken() [StorageHelper.java]",
+          "line": null,
+          "snippet": "openFileOutput(…, MODE_WORLD_READABLE)"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "CRY-ECB-MODE",
+      "fingerprint": "bf06f2abc53d8641",
+      "title": "Block cipher used in ECB mode",
+      "severity": "High",
+      "confidence": "High",
+      "owasp": {
+        "id": "M10",
+        "title": "Insufficient Cryptography"
+      },
+      "cwe": "CWE-327",
+      "masvs": "MASVS-CRYPTO",
+      "analyzer": "crypto",
+      "description": "A cipher is configured for ECB mode. ECB encrypts identical plaintext blocks to identical ciphertext blocks, so structure in the data survives encryption. The classic demonstration is an encrypted bitmap in which the original image is still recognisable. ECB also provides no integrity, so an attacker can reorder or replay blocks.",
+      "remediation": "Use GCM, which provides both confidentiality and integrity, with a unique nonce per encryption. If GCM is unavailable, use CBC with a random IV and authenticate the ciphertext with a separate HMAC key.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/327.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.CryptoHelper.encryptEcb() [CryptoHelper.java]",
+          "line": null,
+          "snippet": "AES/ECB/PKCS5Padding"
+        },
+        {
+          "location": "com.masa.vulnerable.CryptoHelper.encryptDes() [CryptoHelper.java]",
+          "line": null,
+          "snippet": "DES/ECB/PKCS5Padding"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "CRY-WEAK-CIPHER-DES",
+      "fingerprint": "eb7d7839d097225a",
+      "title": "Broken cipher algorithm in use: DES",
+      "severity": "High",
+      "confidence": "High",
+      "owasp": {
+        "id": "M10",
+        "title": "Insufficient Cryptography"
+      },
+      "cwe": "CWE-327",
+      "masvs": "MASVS-CRYPTO",
+      "analyzer": "crypto",
+      "description": "The package requests the `DES` cipher. 56-bit keys are brute-forcible in hours on commodity hardware. Data encrypted with it should be treated as recoverable by anyone who obtains the ciphertext.",
+      "remediation": "Use AES-256 in an authenticated mode (GCM, or CBC with a separate HMAC). Re-encrypt any stored data that was protected with the broken algorithm — changing the code does not fix ciphertext already on devices.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/327.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.CryptoHelper.encryptDes() [CryptoHelper.java]",
+          "line": null,
+          "snippet": "DES"
+        },
+        {
+          "location": "com.masa.vulnerable.CryptoHelper.encryptDes() [CryptoHelper.java]",
+          "line": null,
+          "snippet": "DES/ECB/PKCS5Padding"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "CRY-WEAK-CIPHER-RC4",
+      "fingerprint": "76228376bb60d0f5",
+      "title": "Broken cipher algorithm in use: RC4",
+      "severity": "High",
+      "confidence": "High",
+      "owasp": {
+        "id": "M10",
+        "title": "Insufficient Cryptography"
+      },
+      "cwe": "CWE-327",
+      "masvs": "MASVS-CRYPTO",
+      "analyzer": "crypto",
+      "description": "The package requests the `RC4` cipher. RC4 has statistical biases that leak plaintext; prohibited by RFC 7465. Data encrypted with it should be treated as recoverable by anyone who obtains the ciphertext.",
+      "remediation": "Use AES-256 in an authenticated mode (GCM, or CBC with a separate HMAC). Re-encrypt any stored data that was protected with the broken algorithm — changing the code does not fix ciphertext already on devices.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/327.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.CryptoHelper.encryptRc4() [CryptoHelper.java]",
+          "line": null,
+          "snippet": "RC4"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "SEC-NAMED-RESOURCE",
+      "fingerprint": "2c397ecb8f92218e",
+      "title": "Resource `db_password` holds what its name says is a credential",
+      "severity": "High",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-798",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "The resource `db_password` at `res/values/strings.xml:db_password` contains a 28-character value. The name declares this is a credential, and resource values are trivially readable — `aapt dump` or any APK viewer prints them without decompiling anything. String resources are a common place for keys to end up because they feel like configuration rather than code.",
+      "remediation": "Rotate this credential and remove it from the package. Resource files, BuildConfig fields and Gradle properties all end up inside the shipped artifact — none of them is a secret store. Fetch the value from your backend at runtime instead.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "res/values/strings.xml:db_password",
+          "line": null,
+          "snippet": "Pr0d************ip"
+        }
+      ],
+      "metadata": {
+        "resource_name": "db_password",
+        "value_length": 28
+      }
+    },
+    {
+      "rule_id": "WEB-LOADURL-FROM-INTENT",
+      "fingerprint": "00b98952ad0e9169",
+      "title": "WebView loads a URL taken from an incoming Intent",
+      "severity": "High",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M4",
+        "title": "Insufficient Input/Output Validation"
+      },
+      "cwe": "CWE-939",
+      "masvs": "MASVS-PLATFORM",
+      "analyzer": "webview",
+      "description": "The same method both reads a value out of an Intent and calls `WebView.loadUrl`. If the URL is not validated, any app on the device — or any web page, when the activity is reachable through a browsable deep link — can choose what this WebView loads. That turns the app into an open redirect, and combines with any JavaScript bridge to reach the bridge from attacker-controlled content. This rule matches methods, not data flow, so confirm the value really reaches loadUrl.",
+      "remediation": "Validate before loading: parse the URL, require the https scheme, and check the host against an allowlist of domains you control. Reject anything else rather than falling back to loading it.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/939.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.WebViewActivity.onCreate() [WebViewActivity.java]",
+          "line": null,
+          "snippet": "Intent data reaches loadUrl(…)"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "PRI-SENSITIVE-LOGGING",
+      "fingerprint": "642196d0e1aecb60",
+      "title": "Credentials or personal data are written to the system log",
+      "severity": "High",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M6",
+        "title": "Inadequate Privacy Controls"
+      },
+      "cwe": "CWE-532",
+      "masvs": "MASVS-PRIVACY",
+      "analyzer": "privacy",
+      "description": "2 method(s) call `android.util.Log` and, in the same method, load strings referring to passwords, tokens or personal identifiers. Log output is written to the device log buffer, is captured by bug reports and crash reporters, and is readable by anyone with ADB access or a debuggable build. A credential that reaches the log has left the app's control.",
+      "remediation": "Remove these log statements. Where the log line is genuinely useful, log a non-identifying reference instead of the value — an event name or a hashed identifier — and strip debug logging from release builds with a ProGuard `assumenosideeffects` rule.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/532.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.AdminActivity.onCreate() [Components.java]",
+          "line": null,
+          "snippet": "admin panel opened with token eyJh************ig"
+        },
+        {
+          "location": "com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]",
+          "line": null,
+          "snippet": "aws key AKIA************VC secret wJal************LE"
+        },
+        {
+          "location": "com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]",
+          "line": null,
+          "snippet": "hunt************in"
+        },
+        {
+          "location": "com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]",
+          "line": null,
+          "snippet": "password"
+        },
+        {
+          "location": "com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]",
+          "line": null,
+          "snippet": "session token=eyJh************8U"
+        },
+        {
+          "location": "com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]",
+          "line": null,
+          "snippet": "user password is hunt************in"
+        }
+      ],
+      "metadata": {
+        "log_call_sites": 5
+      }
+    },
+    {
+      "rule_id": "CRY-DEFAULT-MODE",
+      "fingerprint": "4eee9837e457fb42",
+      "title": "Cipher requested without an explicit mode (defaults to ECB)",
+      "severity": "High",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M10",
+        "title": "Insufficient Cryptography"
+      },
+      "cwe": "CWE-327",
+      "masvs": "MASVS-CRYPTO",
+      "analyzer": "crypto",
+      "description": "`Cipher.getInstance(\"AES\")` is used without naming a mode. The JCA provider then picks its default, which on Android is `AES/ECB/PKCS5Padding` — so the code gets ECB without ever saying so, along with everything wrong with ECB.",
+      "remediation": "Always pass a full transformation string, e.g. `Cipher.getInstance(\"AES/GCM/NoPadding\")`.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.CryptoHelper.encryptEcb() [CryptoHelper.java]",
+          "line": null,
+          "snippet": "AES"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "CRY-HARDCODED-KEY",
+      "fingerprint": "8cc88a3a3f49b074",
+      "title": "Cryptographic key or IV appears to be hardcoded",
+      "severity": "High",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M10",
+        "title": "Insufficient Cryptography"
+      },
+      "cwe": "CWE-321",
+      "masvs": "MASVS-CRYPTO",
+      "analyzer": "crypto",
+      "description": "Static fields named like key or IV material are initialised inside the shipped classes. A key compiled into the app is the same for every install and is recoverable by anyone who unpacks it, so the encryption it performs protects data from nobody who has the app. A fixed IV is a related but distinct problem: reusing an IV across messages breaks CBC's semantic security and is catastrophic in GCM, where nonce reuse leaks the authentication key.",
+      "remediation": "Generate keys on the device and store them in the Android Keystore (or the iOS Keychain / Secure Enclave) so the private material never exists in the app's own bytes. Generate a fresh random IV or nonce for every encryption and transmit it alongside the ciphertext — it is not secret, but it must never repeat.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/321.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.CryptoHelper.IV",
+          "line": null,
+          "snippet": "static field `IV` initialised in the class"
+        },
+        {
+          "location": "com.masa.vulnerable.CryptoHelper.KEY",
+          "line": null,
+          "snippet": "static field `KEY` initialised in the class"
+        },
+        {
+          "location": "com.masa.vulnerable.MainActivity.AWS_ACCESS_KEY",
+          "line": null,
+          "snippet": "static field `AWS_ACCESS_KEY` initialised in the class"
+        },
+        {
+          "location": "com.masa.vulnerable.MainActivity.STRIPE_KEY",
+          "line": null,
+          "snippet": "static field `STRIPE_KEY` initialised in the class"
+        },
+        {
+          "location": "com.masa.vulnerable.R$string.google_api_key",
+          "line": null,
+          "snippet": "static field `google_api_key` initialised in the class"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "CRY-SEEDED-RANDOM",
+      "fingerprint": "41cc238d80c4ef82",
+      "title": "SecureRandom is explicitly seeded",
+      "severity": "High",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M10",
+        "title": "Insufficient Cryptography"
+      },
+      "cwe": "CWE-336",
+      "masvs": "MASVS-CRYPTO",
+      "analyzer": "crypto",
+      "description": "`setSeed` is called on a SecureRandom instance. A correctly constructed SecureRandom is already seeded from the system entropy pool; supplying a seed can only reduce entropy, and when the seed is a constant every value the generator produces is reproducible by anyone reading the code. Keys, IVs, nonces and session identifiers derived from it become predictable.",
+      "remediation": "Construct `new SecureRandom()` and use it directly without seeding. Where a deterministic stream is genuinely needed for testing, keep that path out of production builds.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/336.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.CryptoHelper.predictableRandom() [CryptoHelper.java]",
+          "line": null,
+          "snippet": "SecureRandom.setSeed(…) — replaces system entropy"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "MAN-PROVIDER-GRANT-URI",
+      "fingerprint": "4e9499e35b4bfb0a",
+      "title": "Exported provider grants URI permissions",
+      "severity": "Medium",
+      "confidence": "High",
+      "owasp": {
+        "id": "M3",
+        "title": "Insecure Authentication/Authorization"
+      },
+      "cwe": "CWE-926",
+      "masvs": "MASVS-PLATFORM",
+      "analyzer": "manifest",
+      "description": "`.LeakyProvider` sets `android:grantUriPermissions=\"true\"` while exported and unguarded. Temporary URI grants let a caller hand access to a specific record on to a third app, widening the reach of any data the provider exposes.",
+      "remediation": "Restrict grants with `<grant-uri-permission android:path…>` elements rather than allowing them across the whole provider.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "AndroidManifest.xml",
+          "line": 51,
+          "snippet": ".LeakyProvider: android:grantUriPermissions=\"true\""
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "WEB-ALLOW-FILE-ACCESS",
+      "fingerprint": "f6450ade63031438",
+      "title": "WebView enables file:// URL loading",
+      "severity": "Medium",
+      "confidence": "High",
+      "owasp": {
+        "id": "M4",
+        "title": "Insufficient Input/Output Validation"
+      },
+      "cwe": "CWE-749",
+      "masvs": "MASVS-PLATFORM",
+      "analyzer": "webview",
+      "description": "`setAllowFileAccess(true)` is called on a WebView's settings. The WebView may load file:// URLs, which widens what a redirect or an injected URL can reach.",
+      "remediation": "Call `setAllowFileAccess(false)` unless a shipped feature depends on it. These settings default to permissive values on older API levels, so set them explicitly rather than relying on the default.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.WebViewActivity.onCreate() [WebViewActivity.java]",
+          "line": null,
+          "snippet": "setAllowFileAccess(true)"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "WEB-CUSTOM-URL-SCHEME",
+      "fingerprint": "fc97641170765d2c",
+      "title": "Custom URL scheme is reachable from the browser",
+      "severity": "Medium",
+      "confidence": "High",
+      "owasp": {
+        "id": "M4",
+        "title": "Insufficient Input/Output Validation"
+      },
+      "cwe": "CWE-939",
+      "masvs": "MASVS-PLATFORM",
+      "analyzer": "webview",
+      "description": "The app registers a custom URL scheme with the BROWSABLE category, so any web page the user visits can launch this component and control the Intent data it receives. Unlike verified App Links, custom schemes are not tied to a domain you own: another app can register the same scheme, and the platform gives no guarantee about who handles the URL or where it came from.",
+      "remediation": "Treat everything in the incoming URI as untrusted input — validate and canonicalise every parameter before use, and never let it select a file path, a class to instantiate, or a URL to load. For links that must be trustworthy, use verified Android App Links (or Universal Links on iOS) bound to a domain you control.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/939.html"
+      ],
+      "evidence": [
+        {
+          "location": "AndroidManifest.xml",
+          "line": 33,
+          "snippet": ".DeepLinkActivity: custom scheme \"vulnapp://open\" is BROWSABLE"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "MAN-SENSITIVE-PERMISSIONS",
+      "fingerprint": "a2acc824c14161f3",
+      "title": "Application requests 6 high-risk permissions",
+      "severity": "Medium",
+      "confidence": "High",
+      "owasp": {
+        "id": "M6",
+        "title": "Inadequate Privacy Controls"
+      },
+      "cwe": "CWE-250",
+      "masvs": "MASVS-PRIVACY",
+      "analyzer": "manifest",
+      "description": "The app requests permissions that give it access to personal data or powerful device capabilities: `android.permission.ACCESS_FINE_LOCATION` — track the user's precise location; `android.permission.READ_CONTACTS` — read the user's address book; `android.permission.READ_PHONE_STATE` — read device and SIM identifiers; `android.permission.READ_SMS` — read the user's text messages; `android.permission.RECORD_AUDIO` — record from the microphone; `android.permission.REQUEST_INSTALL_PACKAGES` — install other applications. Each is legitimate for some apps. Reported so the set can be checked against what the app actually does: a permission the feature set does not justify is both a privacy problem and extra attack surface if the app is compromised.",
+      "remediation": "Drop any permission not tied to a shipped feature. For the rest, request at the point of use rather than at launch, prefer the narrower variant where one exists (coarse over fine location, READ_MEDIA_* over broad storage), and make sure the privacy policy and store listing match.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "AndroidManifest.xml",
+          "line": null,
+          "snippet": "uses-permission: android.permission.ACCESS_FINE_LOCATION"
+        },
+        {
+          "location": "AndroidManifest.xml",
+          "line": null,
+          "snippet": "uses-permission: android.permission.READ_CONTACTS"
+        },
+        {
+          "location": "AndroidManifest.xml",
+          "line": null,
+          "snippet": "uses-permission: android.permission.READ_PHONE_STATE"
+        },
+        {
+          "location": "AndroidManifest.xml",
+          "line": null,
+          "snippet": "uses-permission: android.permission.READ_SMS"
+        },
+        {
+          "location": "AndroidManifest.xml",
+          "line": null,
+          "snippet": "uses-permission: android.permission.RECORD_AUDIO"
+        },
+        {
+          "location": "AndroidManifest.xml",
+          "line": null,
+          "snippet": "uses-permission: android.permission.REQUEST_INSTALL_PACKAGES"
+        }
+      ],
+      "metadata": {
+        "permissions": [
+          "android.permission.ACCESS_FINE_LOCATION",
+          "android.permission.READ_CONTACTS",
+          "android.permission.READ_PHONE_STATE",
+          "android.permission.READ_SMS",
+          "android.permission.RECORD_AUDIO",
+          "android.permission.REQUEST_INSTALL_PACKAGES"
+        ],
+        "total_requested": 9
+      }
+    },
+    {
+      "rule_id": "MAN-ALLOW-BACKUP",
+      "fingerprint": "dd933582e0c7eef3",
+      "title": "Application data can be extracted through Android Backup",
+      "severity": "Medium",
+      "confidence": "High",
+      "owasp": {
+        "id": "M8",
+        "title": "Security Misconfiguration"
+      },
+      "cwe": "CWE-530",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "manifest",
+      "description": "`android:allowBackup=\"true\"` is set, and no backup rules restrict what is included. Anyone with physical access and USB debugging can run `adb backup` to pull the app's private data directory off the device, and the data also flows to cloud backup. Whatever the app stores locally — session tokens, cached PII — leaves the device with it.",
+      "remediation": "Set `android:allowBackup=\"false\"`, or keep backup enabled and exclude sensitive files with `android:dataExtractionRules` (API 31+) and `android:fullBackupContent`.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/530.html"
+      ],
+      "evidence": [
+        {
+          "location": "AndroidManifest.xml",
+          "line": 19,
+          "snippet": "android:allowBackup=\"true\""
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "MAN-LOW-MIN-SDK",
+      "fingerprint": "30170d319cc22c8a",
+      "title": "minSdkVersion 21 keeps modern platform defaults off",
+      "severity": "Medium",
+      "confidence": "High",
+      "owasp": {
+        "id": "M8",
+        "title": "Security Misconfiguration"
+      },
+      "cwe": "CWE-1104",
+      "masvs": "MASVS-PLATFORM",
+      "analyzer": "manifest",
+      "description": "The app supports API level 21. Below API 28 cleartext HTTP is permitted by default, and below API 24 the system trusts user-installed CAs for the app's traffic, which is what makes casual interception with a proxy possible. Older levels also miss scoped storage and the stricter Intent-redirection rules.",
+      "remediation": "Raise `minSdkVersion` to at least 28 if the user base allows it. While supporting older levels, compensate explicitly: ship a network security config that disables cleartext and pins to the system CA store.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "AndroidManifest.xml",
+          "line": null,
+          "snippet": "android:minSdkVersion=\"21\""
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "NET-HTTP-URL",
+      "fingerprint": "b07403066acad4a9",
+      "title": "Cleartext HTTP endpoints referenced (3 host(s))",
+      "severity": "Medium",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M5",
+        "title": "Insecure Communication"
+      },
+      "cwe": "CWE-319",
+      "masvs": "MASVS-NETWORK",
+      "analyzer": "network",
+      "description": "The package contains `http://` URLs pointing at `api.insecure-demo.example.com`, `config.insecure-demo.example.com`, `telemetry.insecure-demo.example.com`. Traffic to these hosts is unencrypted and unauthenticated: it can be read and modified by anything on the network path. A URL in a string pool is not proof the app requests it at runtime — check the call sites — but each one is a candidate for interception.",
+      "remediation": "Move every endpoint to HTTPS. For URLs that are documentation links or namespace identifiers rather than requests, no change is needed beyond confirming that is what they are.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/319.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.NetworkHelper.fetch() [NetworkHelper.java]",
+          "line": null,
+          "snippet": "http://api.insecure-demo.example.com/v1/login"
+        },
+        {
+          "location": "com.masa.vulnerable.NetworkHelper.fetch() [NetworkHelper.java]",
+          "line": null,
+          "snippet": "http://telemetry.insecure-demo.example.com/collect"
+        },
+        {
+          "location": "assets/config.properties:5",
+          "line": null,
+          "snippet": "http://config.insecure-demo.example.com/settings"
+        }
+      ],
+      "metadata": {
+        "hosts": [
+          "api.insecure-demo.example.com",
+          "config.insecure-demo.example.com",
+          "telemetry.insecure-demo.example.com"
+        ]
+      }
+    },
+    {
+      "rule_id": "NET-NO-NSC",
+      "fingerprint": "10e4a4fb57ab2eef",
+      "title": "No network security configuration is declared",
+      "severity": "Medium",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M5",
+        "title": "Insecure Communication"
+      },
+      "cwe": "CWE-295",
+      "masvs": "MASVS-NETWORK",
+      "analyzer": "network",
+      "description": "The app declares no `android:networkSecurityConfig`, and its minSdkVersion (21) is below 28. On those platform versions cleartext HTTP is allowed by default and — below API 24 — the app also trusts CAs the user has installed, which is exactly what makes traffic interception with a proxy certificate straightforward.",
+      "remediation": "Add a network security config that sets `cleartextTrafficPermitted=\"false\"` and restricts trust anchors to the system store, then reference it from <application>.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "AndroidManifest.xml",
+          "line": null,
+          "snippet": "no android:networkSecurityConfig attribute"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "STO-EXTERNAL-STORAGE",
+      "fingerprint": "26fe9c32fae0b804",
+      "title": "Application writes to shared external storage",
+      "severity": "Medium",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M9",
+        "title": "Insecure Data Storage"
+      },
+      "cwe": "CWE-922",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "storage",
+      "description": "The app uses external-storage APIs, including the public shared-storage roots (`getExternalStorageDirectory` / `getExternalStoragePublicDirectory`). External storage has no per-app access control: on older platform versions any app holding READ_EXTERNAL_STORAGE can read everything there, and files survive uninstall. Whether this matters depends on what is written — check the call sites listed below.",
+      "remediation": "Keep anything sensitive in internal storage (`getFilesDir()`), which is sandboxed per app. If a file must be shared, write it to app-specific external storage (`getExternalFilesDir()`) and hand other apps a FileProvider URI rather than a path.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/922.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.StorageHelper.writeToken() [StorageHelper.java]",
+          "line": null,
+          "snippet": "getExternalStorageDirectory()"
+        },
+        {
+          "location": "com.masa.vulnerable.StorageHelper.writeToken() [StorageHelper.java]",
+          "line": null,
+          "snippet": "getExternalStoragePublicDirectory()"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "STO-UNENCRYPTED-DB",
+      "fingerprint": "0e0958110b81ce88",
+      "title": "SQLite database is created without encryption",
+      "severity": "Medium",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M9",
+        "title": "Insecure Data Storage"
+      },
+      "cwe": "CWE-311",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "storage",
+      "description": "The app creates SQLite databases and no encryption layer (SQLCipher or an equivalent) was found in the package. The database file sits in the app's private directory in plaintext, which protects it from other apps but not from a rooted device, an ADB backup, a forensic image, or malware that has already escalated. Whether that matters depends on what the tables hold.",
+      "remediation": "For data that would matter if the device were lost, encrypt at rest: SQLCipher for the database, or Jetpack Security (`EncryptedFile` / `EncryptedSharedPreferences`) with the key held in the Android Keystore so it never exists in the app's memory as raw bytes.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/311.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.StorageHelper.writeToken() [StorageHelper.java]",
+          "line": null,
+          "snippet": "SQLite database created"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "CRY-WEAK-HASH-MD5",
+      "fingerprint": "b9dbd912a764d9b9",
+      "title": "Weak hash algorithm in use: MD5",
+      "severity": "Medium",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M10",
+        "title": "Insufficient Cryptography"
+      },
+      "cwe": "CWE-328",
+      "masvs": "MASVS-CRYPTO",
+      "analyzer": "crypto",
+      "description": "The package requests `MD5`. MD5 collisions are trivial to generate. This matters wherever the hash is relied on for integrity or identity — signature verification, tamper checks, deduplication of security-relevant data. It is not a problem where the hash is only a non-security checksum or cache key, so confirm how it is used.",
+      "remediation": "Use SHA-256 or SHA-3 for integrity and identity. For password storage no plain digest is appropriate — use Argon2id, scrypt or PBKDF2 with a per-user salt and a high iteration count.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/328.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.CryptoHelper.hashPassword() [CryptoHelper.java]",
+          "line": null,
+          "snippet": "MD5"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "CRY-WEAK-HASH-SHA1",
+      "fingerprint": "b511b67d693e0031",
+      "title": "Weak hash algorithm in use: SHA1",
+      "severity": "Medium",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M10",
+        "title": "Insufficient Cryptography"
+      },
+      "cwe": "CWE-328",
+      "masvs": "MASVS-CRYPTO",
+      "analyzer": "crypto",
+      "description": "The package requests `SHA1`. SHA-1 collisions are practical (SHAttered, 2017). This matters wherever the hash is relied on for integrity or identity — signature verification, tamper checks, deduplication of security-relevant data. It is not a problem where the hash is only a non-security checksum or cache key, so confirm how it is used.",
+      "remediation": "Use SHA-256 or SHA-3 for integrity and identity. For password storage no plain digest is appropriate — use Argon2id, scrypt or PBKDF2 with a per-user salt and a high iteration count.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/328.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.CryptoHelper.hashPassword() [CryptoHelper.java]",
+          "line": null,
+          "snippet": "SHA-1"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "SEC-ENTROPY",
+      "fingerprint": "b7dbf32c2845e395",
+      "title": "High-entropy string may be an embedded secret",
+      "severity": "Medium",
+      "confidence": "Low",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-798",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "A 32-character string with 5.00 bits of entropy per character was found in the package. That is the statistical profile of a key or token rather than of ordinary program text, though it matches no known credential format — it could equally be a hash, a nonce or an encoded asset. Confirm manually.",
+      "remediation": "Check what this value is. If it is a credential, rotate it and move it out of the package; if it is benign, no action is needed.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.MainActivity.HIGH_ENTROPY_BLOB [MainActivity.java]",
+          "line": null,
+          "snippet": "Zq7X************Sa"
+        }
+      ],
+      "metadata": {
+        "entropy": 5.0,
+        "length": 32,
+        "threshold": 4.3
+      }
+    },
+    {
+      "rule_id": "STO-PLAINTEXT-PREFS",
+      "fingerprint": "2b0ec6cf0c7f3bf7",
+      "title": "Credential-shaped keys are written to unencrypted SharedPreferences",
+      "severity": "Medium",
+      "confidence": "Low",
+      "owasp": {
+        "id": "M9",
+        "title": "Insecure Data Storage"
+      },
+      "cwe": "CWE-312",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "storage",
+      "description": "The app writes to SharedPreferences, no encrypted-preferences implementation was found, and the package contains key names that suggest credentials are among the values stored: `ADMIN_PASSWORD`, `AWS_SECRET`, `GITHUB_TOKEN`, `JWT`, `auth_token`, `db_password`, `getSecret`, `google_api_key`. SharedPreferences are a plaintext XML file in the app's data directory. This rule matches on key *names*, so confirm what is actually written before acting on it.",
+      "remediation": "Store tokens and passwords with `EncryptedSharedPreferences` backed by an Android Keystore key, or keep only a short-lived token in memory and re-authenticate rather than persisting a long-lived one.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/312.html"
+      ],
+      "evidence": [
+        {
+          "location": "com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]",
+          "line": null,
+          "snippet": "SharedPreferences.putString(…)"
+        },
+        {
+          "location": "com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]",
+          "line": null,
+          "snippet": "SharedPreferences.putString(…)"
+        },
+        {
+          "location": "com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]",
+          "line": null,
+          "snippet": "SharedPreferences.putString(…)"
+        },
+        {
+          "location": "com.masa.vulnerable.SecureHelper.store() [SecureHelper.java]",
+          "line": null,
+          "snippet": "SharedPreferences.putString(…)"
+        }
+      ],
+      "metadata": {
+        "suspicious_keys": [
+          "ADMI********RD",
+          "AWS_SECRET",
+          "GITH******EN",
+          "JWT",
+          "auth_token",
+          "db_password",
+          "getSecret",
+          "goog********ey",
+          "hash******rd",
+          "hunt************in",
+          "password",
+          "secrets.db",
+          "slac************en",
+          "token.txt",
+          "writeToken"
+        ]
+      }
+    },
+    {
+      "rule_id": "NET-NO-PINNING",
+      "fingerprint": "1e52fd926c97dd34",
+      "title": "No certificate pinning was found",
+      "severity": "Low",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M5",
+        "title": "Insecure Communication"
+      },
+      "cwe": "CWE-295",
+      "masvs": "MASVS-NETWORK",
+      "analyzer": "network",
+      "description": "No certificate or public-key pinning implementation was found (no OkHttp CertificatePinner, TrustKit, or `<pin-set>` in a network security config). Without pinning, the app trusts every CA in the system store, so a mis-issued or compromised CA certificate — or a CA an attacker can coerce — is enough to intercept traffic. Reported as an absent hardening measure, not a defect: pinning carries real operational risk if certificate rotation is not automated, and is not appropriate for every app.",
+      "remediation": "For an app handling authentication or financial data, pin to the public key (not the leaf certificate) of your own backends, include a backup pin, and make sure the rotation process is tested before shipping — a pin that expires bricks the app in the field.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "vulnerable-demo.apk",
+          "line": null,
+          "snippet": "no pinning implementation found in the package"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "BIN-NO-OBFUSCATION",
+      "fingerprint": "b89cf72a2ba52b49",
+      "title": "Application code is not obfuscated",
+      "severity": "Low",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M7",
+        "title": "Insufficient Binary Protections"
+      },
+      "cwe": "CWE-656",
+      "masvs": "MASVS-RESILIENCE",
+      "analyzer": "binary",
+      "description": "18 application classes carry their original names (0 look renamed, 0%), and 18 retain their source file names. The app's structure, class names and method names are therefore readable to anyone who decompiles it — which takes one command. Obfuscation is not a security control and does not protect a secret that should not be in the binary at all; it raises the cost of understanding and repackaging the app, which matters most for licensing, cloning and tamper resistance.",
+      "remediation": "Enable R8 in release builds (`minifyEnabled true`) with a keep ruleset limited to what reflection genuinely needs. Verify the release APK afterwards — a keep rule that is too broad leaves the app effectively unobfuscated.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "classes.dex",
+          "line": null,
+          "snippet": "class com.masa.vulnerable.AdminActivity"
+        },
+        {
+          "location": "classes.dex",
+          "line": null,
+          "snippet": "class com.masa.vulnerable.Components"
+        },
+        {
+          "location": "classes.dex",
+          "line": null,
+          "snippet": "class com.masa.vulnerable.CryptoHelper"
+        },
+        {
+          "location": "classes.dex",
+          "line": null,
+          "snippet": "class com.masa.vulnerable.DeepLinkActivity"
+        },
+        {
+          "location": "classes.dex",
+          "line": null,
+          "snippet": "class com.masa.vulnerable.ExportedReceiver"
+        },
+        {
+          "location": "classes.dex",
+          "line": null,
+          "snippet": "class com.masa.vulnerable.ExportedService"
+        },
+        {
+          "location": "classes.dex",
+          "line": null,
+          "snippet": "class com.masa.vulnerable.GuardedProvider"
+        },
+        {
+          "location": "classes.dex",
+          "line": null,
+          "snippet": "class com.masa.vulnerable.LeakyProvider"
+        },
+        {
+          "location": "classes.dex",
+          "line": null,
+          "snippet": "class com.masa.vulnerable.MainActivity"
+        },
+        {
+          "location": "classes.dex",
+          "line": null,
+          "snippet": "class com.masa.vulnerable.NetworkHelper"
+        }
+      ],
+      "metadata": {
+        "app_classes": 18,
+        "renamed_ratio": 0.0,
+        "classes_with_source_file": 18
+      }
+    },
+    {
+      "rule_id": "BIN-NO-ROOT-DETECTION",
+      "fingerprint": "9bb76feec6890b61",
+      "title": "No root detection was found",
+      "severity": "Low",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M7",
+        "title": "Insufficient Binary Protections"
+      },
+      "cwe": "CWE-693",
+      "masvs": "MASVS-RESILIENCE",
+      "analyzer": "binary",
+      "description": "No root-detection logic was found in the package (no checks for the `su` binary, known superuser packages, Magisk or Xposed). On a rooted device the app's sandbox does not hold: its private files, its memory and its runtime behaviour are all open to inspection and modification. Reported as an absent hardening measure. Root detection is bypassable by an attacker who controls the device and should never be the only thing protecting an asset — but its absence means the app cannot even tell that it is running somewhere hostile.",
+      "remediation": "If the app handles payments, health data or DRM, add root detection (RootBeer, or Play Integrity API on Android) and decide what to do about a positive result — often degrading a feature rather than refusing to run. Keep the server the authority: a client-side check informs risk scoring, it does not enforce anything.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "vulnerable-demo.apk",
+          "line": null,
+          "snippet": "no root-detection markers found in the package"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "BIN-NO-ANTI-DEBUG",
+      "fingerprint": "2fb88bf78ae19007",
+      "title": "No anti-debugging checks were found",
+      "severity": "Low",
+      "confidence": "Low",
+      "owasp": {
+        "id": "M7",
+        "title": "Insufficient Binary Protections"
+      },
+      "cwe": "CWE-693",
+      "masvs": "MASVS-RESILIENCE",
+      "analyzer": "binary",
+      "description": "No runtime debugger detection was found (`Debug.isDebuggerConnected`, a TracerPid check, `ptrace`/`PT_DENY_ATTACH`). Attaching a debugger or a Frida script to a running app lets an attacker read decrypted data, change control flow and bypass client-side checks. Reported as an absent hardening measure — anti-debugging is bypassable and only raises cost.",
+      "remediation": "For an app protecting high-value assets, detect attached debuggers and instrumentation frameworks at runtime and report the signal to the server for risk scoring rather than only reacting on-device.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "vulnerable-demo.apk",
+          "line": null,
+          "snippet": "no anti-debugging markers found in the package"
+        }
+      ],
+      "metadata": {}
+    }
+  ],
+  "owasp_coverage": {
+    "M1": {
+      "title": "Improper Credential Usage",
+      "finding_count": 10
+    },
+    "M2": {
+      "title": "Inadequate Supply Chain Security",
+      "finding_count": 0
+    },
+    "M3": {
+      "title": "Insecure Authentication/Authorization",
+      "finding_count": 4
+    },
+    "M4": {
+      "title": "Insufficient Input/Output Validation",
+      "finding_count": 6
+    },
+    "M5": {
+      "title": "Insecure Communication",
+      "finding_count": 6
+    },
+    "M6": {
+      "title": "Inadequate Privacy Controls",
+      "finding_count": 2
+    },
+    "M7": {
+      "title": "Insufficient Binary Protections",
+      "finding_count": 3
+    },
+    "M8": {
+      "title": "Security Misconfiguration",
+      "finding_count": 3
+    },
+    "M9": {
+      "title": "Insecure Data Storage",
+      "finding_count": 5
+    },
+    "M10": {
+      "title": "Insufficient Cryptography",
+      "finding_count": 8
+    }
+  },
+  "stats": {
+    "files_scanned": 8,
+    "bytes_scanned": 23628,
+    "strings_extracted": 270,
+    "duration_seconds": 0.01,
+    "decompilers_used": [
+      "built-in (pure Python)"
+    ],
+    "degraded": [
+      "apktool and jadx are not installed; using the built-in DEX and resource parsers (all analyzers still run)"
+    ]
+  },
+  "errors": []
+}

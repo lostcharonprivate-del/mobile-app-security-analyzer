@@ -1,0 +1,34 @@
+name: New rule or feature
+description: Propose a new check, an output format, or a change in behaviour.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is missing
+      description: The concrete insecure pattern or workflow gap this would address.
+    validations:
+      required: true
+
+  - type: input
+    id: owasp
+    attributes:
+      label: OWASP Mobile Top 10 category
+      description: For a new rule — which of M1–M10 it maps to.
+      placeholder: M5 Insecure Communication
+
+  - type: textarea
+    id: detection
+    attributes:
+      label: How it could be detected statically
+      description: |
+        What in the manifest, strings, DEX instruction stream, plist or Mach-O
+        would give it away — and what else that signal could legitimately be.
+    validations:
+      required: true
+
+  - type: textarea
+    id: fp
+    attributes:
+      label: Expected false positives
+      description: Safe patterns that look similar, and how the rule would avoid them.

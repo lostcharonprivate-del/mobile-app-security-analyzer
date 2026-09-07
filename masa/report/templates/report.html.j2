@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security report — {{ app.file_name }}</title>
+<style>
+  :root {
+    --ink: #14181d; --muted: #5b6672; --faint: #8a949e;
+    --rule: #e2e6ea; --bg: #ffffff; --panel: #f7f8fa; --panel-2: #eef1f4;
+    --critical: #a4133c; --high: #c1440e; --medium: #9a6700; --low: #2b6cb0; --info: #5b6672;
+    --accent: #1f3a5f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 28px 80px; }
+  header.masthead { border-bottom: 3px solid var(--ink); padding-bottom: 20px; margin-bottom: 28px; }
+  .eyebrow { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: 27px; margin: 8px 0 4px; letter-spacing: -.01em; }
+  h2 { font-size: 19px; margin: 40px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--rule); letter-spacing: -.01em; }
+  h3 { font-size: 15px; margin: 0; }
+  .sub { color: var(--muted); font-size: 13.5px; }
+  code, .mono { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; }
+
+  .notice { background: #fff8e6; border: 1px solid #f0d9a0; border-left: 4px solid #d99b00;
+            padding: 14px 16px; border-radius: 4px; margin: 22px 0; font-size: 13.5px; }
+  .notice strong { display: block; margin-bottom: 4px; }
+
+  .scorecard { display: grid; grid-template-columns: 168px 1fr; gap: 26px; align-items: center;
+               background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 22px 24px; }
+  .grade { text-align: center; }
+  .grade .letter { font-size: 62px; font-weight: 700; line-height: 1; letter-spacing: -.03em; }
+  .grade .score { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .grade-A .letter { color: #216e39; } .grade-B .letter { color: #3f7a3f; }
+  .grade-C .letter { color: var(--medium); } .grade-D .letter { color: var(--high); }
+  .grade-F .letter { color: var(--critical); }
+
+  .sevgrid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .sevpill { border: 1px solid var(--rule); background: #fff; border-radius: 999px;
+             padding: 5px 13px; font-size: 12.5px; font-weight: 600; }
+  .sevpill .n { font-weight: 700; }
+  .sev-Critical { color: var(--critical); border-color: #f0c4d0; }
+  .sev-High { color: var(--high); border-color: #f2cfbb; }
+  .sev-Medium { color: var(--medium); border-color: #ecdca6; }
+  .sev-Low { color: var(--low); border-color: #c3d9ee; }
+  .sev-Info { color: var(--info); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-size: 11px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .kv td:first-child { color: var(--muted); width: 210px; white-space: nowrap; }
+  .kv td:last-child { overflow-wrap: anywhere; }
+  .scroll { overflow-x: auto; }
+
+  .owasp-row td:first-child { font-weight: 700; width: 54px; }
+  .count-0 { color: var(--faint); }
+  .count-hit { font-weight: 700; }
+
+  .finding { border: 1px solid var(--rule); border-radius: 8px; margin: 14px 0; overflow: hidden; }
+  .finding > summary { padding: 13px 16px; cursor: pointer; display: flex; gap: 12px;
+                       align-items: baseline; background: var(--panel); list-style: none; }
+  .finding > summary::-webkit-details-marker { display: none; }
+  .finding > summary::before { content: "▸"; color: var(--faint); font-size: 11px; }
+  .finding[open] > summary::before { content: "▾"; }
+  .finding[open] > summary { border-bottom: 1px solid var(--rule); }
+  .badge { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+           padding: 3px 8px; border-radius: 3px; color: #fff; white-space: nowrap; }
+  .badge.sev-Critical { background: var(--critical); } .badge.sev-High { background: var(--high); }
+  .badge.sev-Medium { background: var(--medium); } .badge.sev-Low { background: var(--low); }
+  .badge.sev-Info { background: var(--info); }
+  .summary-title { flex: 1; font-weight: 600; }
+  .summary-meta { color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .body { padding: 16px 18px 18px; }
+  .label { font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase;
+           color: var(--muted); font-weight: 700; margin: 16px 0 5px; }
+  .body > .label:first-child { margin-top: 0; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+  .tag { font-size: 11.5px; background: var(--panel-2); border-radius: 3px; padding: 2px 8px; color: var(--muted); }
+  .evidence { background: #fbfcfd; border: 1px solid var(--rule); border-radius: 5px;
+              padding: 4px 0; }
+  .ev-item { padding: 7px 12px; border-bottom: 1px solid #eef1f4; }
+  .ev-item:last-child { border-bottom: none; }
+  .loc { color: var(--accent); font-weight: 600; overflow-wrap: anywhere; }
+  .snip { color: #33404d; overflow-wrap: anywhere; margin-top: 2px; }
+  .snip::before { content: "› "; color: var(--faint); }
+  ul.refs { margin: 4px 0 0; padding-left: 18px; font-size: 13px; }
+  ul.refs a { color: var(--accent); }
+  .empty { color: var(--muted); font-style: italic; padding: 12px 0; }
+  footer { margin-top: 52px; padding-top: 18px; border-top: 1px solid var(--rule);
+           color: var(--faint); font-size: 12px; }
+  @media print {
+    .finding { break-inside: avoid; }
+    .finding > summary::before { content: ""; }
+    details { display: block; }
+    details > .body { display: block !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">Mobile Application Security Assessment</div>
+  <h1>{{ app.file_name }}</h1>
+  <div class="sub">
+    {{ app.package_name or "package name unavailable" }}
+    {% if app.version_name %} · version {{ app.version_name }}{% endif %}
+    · {{ app.platform.value }} · generated {{ generated }}
+  </div>
+</header>
+
+<div class="notice">
+  <strong>Authorised use only</strong>
+  This report was produced by static analysis of a package supplied to the tool. Analyse
+  only applications you own or have explicit written authorisation to test — unauthorised
+  analysis of third-party applications may breach their terms of service or the law in your
+  jurisdiction. Findings are produced by pattern matching over decompiled code and require
+  human confirmation; the tool never executed any code from the package.
+</div>
+
+<div class="scorecard">
+  <div class="grade grade-{{ report.risk_grade }}">
+    <div class="letter">{{ report.risk_grade }}</div>
+    <div class="score">{{ "%.0f"|format(report.risk_score) }} / 100 risk</div>
+  </div>
+  <div>
+    <div class="sevgrid">
+      {% for label in severity_order %}
+      <span class="sevpill sev-{{ label }}"><span class="n">{{ severity_counts[label] }}</span> {{ label }}</span>
+      {% endfor %}
+    </div>
+    <div class="sub">
+      {{ breakdown.grade_label }}. {{ report.findings|length }} finding(s) across
+      {{ grouped|length }} of 10 OWASP Mobile Top 10 categories.
+      Scanned {{ stats.files_scanned }} files and {{ stats.strings_extracted }} strings
+      in {{ stats.duration_seconds }}s.
+    </div>
+  </div>
+</div>
+
+<h2>Application</h2>
+<div class="scroll">
+<table class="kv">
+  <tr><td>File</td><td class="mono">{{ app.file_name }} ({{ "{:,}".format(app.file_size) }} bytes)</td></tr>
+  <tr><td>SHA-256</td><td class="mono">{{ app.sha256 }}</td></tr>
+  <tr><td>Package / bundle ID</td><td class="mono">{{ app.package_name or "—" }}</td></tr>
+  <tr><td>Version</td><td>{{ app.version_name or "—" }}{% if app.version_code %} (build {{ app.version_code }}){% endif %}</td></tr>
+  {% if app.min_sdk or app.target_sdk %}
+  <tr><td>SDK</td><td>min {{ app.min_sdk or "—" }} · target {{ app.target_sdk or "—" }}</td></tr>
+  {% endif %}
+  {% if app.min_os_version %}
+  <tr><td>Minimum iOS version</td><td>{{ app.min_os_version }}</td></tr>
+  {% endif %}
+  <tr><td>Permissions requested</td><td>
+    {% if app.permissions %}<span class="mono">{{ app.permissions|join(", ") }}</span>{% else %}—{% endif %}
+  </td></tr>
+  {% if app.components %}
+  <tr><td>Components</td><td>
+    {% for kind, items in app.components.items() %}
+      {{ kind }}: {{ items|length }}
+      ({{ items|selectattr("exported")|list|length }} exported){% if not loop.last %} · {% endif %}
+    {% endfor %}
+  </td></tr>
+  {% endif %}
+  {% if app.signing %}
+  <tr><td>Signing</td><td>
+    {% if app.signing.schemes %}{{ app.signing.schemes|join(", ") }}{% endif %}
+    {% for cert in app.signing.certificates or [] %}
+      <div class="mono sub">{{ cert.common_name or cert.file }} · {{ cert.signature_algorithms|join(", ") }}
+      {% if cert.debug_certificate %} · DEBUG CERTIFICATE{% endif %}</div>
+    {% endfor %}
+  </td></tr>
+  {% endif %}
+  {% if app.libraries %}
+  <tr><td>Third-party components</td><td>
+    {% for lib in app.libraries[:25] %}
+      <div class="mono">{{ lib.name }} {{ lib.version or "(version unknown)" }}</div>
+    {% endfor %}
+    {% if app.libraries|length > 25 %}<div class="sub">…and {{ app.libraries|length - 25 }} more</div>{% endif %}
+  </td></tr>
+  {% endif %}
+  <tr><td>Decompilers used</td><td>{{ stats.decompilers_used|join(", ") }}</td></tr>
+</table>
+</div>
+
+<h2>OWASP Mobile Top 10 (2024) coverage</h2>
+<div class="scroll">
+<table>
+  <thead><tr><th>ID</th><th>Risk</th><th>Findings</th></tr></thead>
+  <tbody>
+  {% for oid, category in owasp.items() %}
+    <tr class="owasp-row">
+      <td>{{ oid }}</td>
+      <td>{{ category.title }}</td>
+      <td class="{{ 'count-hit' if grouped.get(oid) else 'count-0' }}">
+        {{ grouped.get(oid)|length if grouped.get(oid) else 0 }}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<h2>Findings</h2>
+{% if not report.findings %}
+  <p class="empty">No findings were produced. This means no rule matched — it is not a
+  statement that the application is secure.</p>
+{% endif %}
+
+{% for oid, findings in grouped.items() %}
+  <h3 style="margin-top:30px">{{ oid }} · {{ owasp[oid].title }}</h3>
+  <div class="sub" style="margin-bottom:8px">{{ owasp[oid].description }}</div>
+
+  {% for f in findings %}
+  <details class="finding"{% if f.severity.rank >= 4 %} open{% endif %}>
+    <summary>
+      <span class="badge sev-{{ f.severity.label }}">{{ f.severity.label }}</span>
+      <span class="summary-title">{{ f.title }}</span>
+      <span class="summary-meta mono">{{ f.rule_id }}</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">{{ f.owasp }} {{ owasp[f.owasp].title }}</span>
+        {% if f.cwe %}<span class="tag">{{ f.cwe }}</span>{% endif %}
+        {% if f.masvs %}<span class="tag">{{ f.masvs }}</span>{% endif %}
+        <span class="tag">confidence: {{ f.confidence.label }}</span>
+        <span class="tag">analyzer: {{ f.analyzer }}</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>{{ f.description }}</div>
+
+      <div class="label">How to fix it</div>
+      <div>{{ f.remediation }}</div>
+
+      {% if f.evidence %}
+      <div class="label">Evidence ({{ f.evidence|length }}{% if f.metadata.evidence_truncated %}
+        of {{ f.evidence|length + f.metadata.evidence_truncated }}{% endif %})</div>
+      <div class="evidence">
+        {% for e in f.evidence %}
+        <div class="ev-item">
+          <div class="loc mono">{{ e.location }}{% if e.line %}:{{ e.line }}{% endif %}</div>
+          {% if e.snippet %}<div class="snip mono">{{ e.snippet }}</div>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if f.references %}
+      <div class="label">References</div>
+      <ul class="refs">
+        {% for ref in f.references %}
+        <li>
+          {% if ref | is_safe_url %}
+          <a href="{{ ref }}" rel="noreferrer noopener nofollow">{{ ref }}</a>
+          {% else %}
+          <span class="mono">{{ ref }}</span>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </details>
+  {% endfor %}
+{% endfor %}
+
+<h2>Scan coverage and limitations</h2>
+<div class="scroll">
+<table class="kv">
+  <tr><td>Files extracted</td><td>{{ stats.files_scanned }}</td></tr>
+  <tr><td>Bytes extracted</td><td>{{ "{:,}".format(stats.bytes_scanned) }}</td></tr>
+  <tr><td>Strings analysed</td><td>{{ "{:,}".format(stats.strings_extracted) }}</td></tr>
+  <tr><td>Duration</td><td>{{ stats.duration_seconds }}s</td></tr>
+</table>
+</div>
+
+{% if stats.degraded %}
+<div class="label">Analysis that could not run in full</div>
+<ul class="refs">{% for note in stats.degraded %}<li>{{ note }}</li>{% endfor %}</ul>
+{% endif %}
+
+{% if report.errors %}
+<div class="label">Errors</div>
+<ul class="refs">{% for err in report.errors %}<li>{{ err }}</li>{% endfor %}</ul>
+{% endif %}
+
+<div class="label">How the risk score is calculated</div>
+<div class="sub">{{ scoring_explanation }}
+{% if breakdown.capped_rules %}
+Contribution was capped for: <span class="mono">{{ breakdown.capped_rules|join(", ") }}</span>.
+{% endif %}
+</div>
+
+<div class="label">What this analysis does not cover</div>
+<div class="sub">
+  This is static analysis only: the package was decompiled and pattern-matched, never
+  executed. It cannot observe runtime behaviour, actual network traffic, server-side
+  controls, or logic that is assembled dynamically or loaded after install. Native
+  libraries, obfuscated code and reflective calls limit what static rules can see.
+  Absence of a finding is not evidence of absence of a vulnerability.
+</div>
+
+<footer>
+  Generated by mobile-app-security-analyzer {{ report.tool_version }} ·
+  {{ generated }} · all analysis performed locally; no package contents were transmitted.
+</footer>
+
+</div>
+</body>
+</html>

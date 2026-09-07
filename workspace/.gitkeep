@@ -1,0 +1,2 @@
+Drop an APK or IPA here, then run:
+  docker compose run --rm masa scan /work/your-app.apk -f all -o /work/report

@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# Test and coverage artefacts
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Built fixtures — regenerate with tests/fixtures/build_*.sh
+tests/fixtures/vulnerable-demo.apk
+tests/fixtures/vulnerable-demo.apk.idsig
+tests/fixtures/vulnerable-demo.ipa
+
+# Analysis output. The reports under examples/ are a checked-in deliverable,
+# so they are re-included below.
+workspace/*
+!workspace/.gitkeep
+*-report.html
+*-report.json
+*-report.pdf
+!examples/*-report.html
+!examples/*-report.json
+
+# Documentation screenshots are checked in; the scratch renders are not.
+docs/images/*.raw.png
+docs/images/*.svg
+
+# Editors
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store

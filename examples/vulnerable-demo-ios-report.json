@@ -1,0 +1,1040 @@
+{
+  "schema_version": "1.0",
+  "tool": {
+    "name": "mobile-app-security-analyzer",
+    "version": "1.0.0"
+  },
+  "generated_at": "2026-09-07T00:04:09.466954+00:00",
+  "app": {
+    "platform": "ios",
+    "file_name": "vulnerable-demo.ipa",
+    "file_size": 7387,
+    "sha256": "9193e47f4d1f09b5c2750a665d23c114ef950ba9f8486569382c49d2b04ff439",
+    "package_name": "com.masa.vulnerable-ios",
+    "version_name": "2.4.1",
+    "version_code": "241",
+    "min_sdk": null,
+    "target_sdk": null,
+    "min_os_version": "11.0",
+    "permissions": [
+      "NSCameraUsageDescription",
+      "NSContactsUsageDescription",
+      "NSLocationAlwaysAndWhenInUseUsageDescription",
+      "NSMicrophoneUsageDescription",
+      "NSUserTrackingUsageDescription"
+    ],
+    "components": {},
+    "signing": {
+      "entitlements": {
+        "application-identifier": "ABCDE12345.com.masa.vulnerable-ios",
+        "get-task-allow": true,
+        "keychain-access-groups": [
+          "ABCDE12345.com.masa.vulnerable-ios"
+        ]
+      }
+    },
+    "libraries": [
+      {
+        "name": "DemoAnalytics",
+        "version": null,
+        "ecosystem": "SwiftURL",
+        "version_source": ""
+      }
+    ],
+    "extra": {
+      "display_name": "Vulnerable Demo",
+      "frameworks": [
+        "DemoAnalytics.framework"
+      ],
+      "archive_entries": 9,
+      "url_schemes": [
+        "vulndemo",
+        "vulndemo-auth"
+      ],
+      "macho": {
+        "cpu_type": "arm64",
+        "is_64bit": true,
+        "architectures": [
+          "arm64"
+        ],
+        "encrypted": false,
+        "crypt_id": 0,
+        "pie": true,
+        "code_signature": false,
+        "symbols_stripped": true,
+        "symbol_count": 53,
+        "linked_libraries": [
+          "/System/Library/Frameworks/Foundation.framework/Foundation",
+          "/System/Library/Frameworks/Security.framework/Security",
+          "/usr/lib/libSystem.B.dylib",
+          "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
+          "/usr/lib/libobjc.A.dylib"
+        ],
+        "objc_class_count": 3
+      },
+      "score_breakdown": {
+        "raw": 116.75,
+        "score": 98.0,
+        "grade": "F",
+        "grade_label": "Critical issues; do not ship in this state",
+        "severity_counts": {
+          "Critical": 3,
+          "High": 7,
+          "Medium": 13,
+          "Low": 3,
+          "Info": 2
+        },
+        "capped_rules": []
+      }
+    }
+  },
+  "risk": {
+    "score": 98.0,
+    "grade": "F",
+    "severity_counts": {
+      "Critical": 3,
+      "High": 7,
+      "Medium": 13,
+      "Low": 3,
+      "Info": 2
+    }
+  },
+  "findings": [
+    {
+      "rule_id": "SEC-AWS-AKID",
+      "fingerprint": "3f5b76984e9e5af5",
+      "title": "AWS access key ID hardcoded in the package (AKIA************VR)",
+      "severity": "Critical",
+      "confidence": "High",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-798",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "A value matching the AWS access key ID pattern is embedded in the shipped package and was found in 1 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access. AWS access key IDs are paired with a secret key; both are usually shipped together.",
+      "remediation": "Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.",
+      "references": [
+        "https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage",
+        "https://cwe.mitre.org/data/definitions/798.html"
+      ],
+      "evidence": [
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "AKIA************VR"
+        }
+      ],
+      "metadata": {
+        "secret_length": 20,
+        "match_count": 1
+      }
+    },
+    {
+      "rule_id": "SEC-GITHUB-PAT",
+      "fingerprint": "1d447c623101bc2d",
+      "title": "GitHub token hardcoded in the package (ghp_************Gg)",
+      "severity": "Critical",
+      "confidence": "High",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-798",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "A value matching the GitHub token pattern is embedded in the shipped package and was found in 1 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access.",
+      "remediation": "Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.",
+      "references": [
+        "https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage",
+        "https://cwe.mitre.org/data/definitions/798.html"
+      ],
+      "evidence": [
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "ghp_************Gg"
+        }
+      ],
+      "metadata": {
+        "secret_length": 40,
+        "match_count": 1
+      }
+    },
+    {
+      "rule_id": "SEC-STRIPE",
+      "fingerprint": "0461f11940a58a48",
+      "title": "Stripe secret key hardcoded in the package (sk_l************12)",
+      "severity": "Critical",
+      "confidence": "High",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-798",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "A value matching the Stripe secret key pattern is embedded in the shipped package and was found in 1 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access.",
+      "remediation": "Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.",
+      "references": [
+        "https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage",
+        "https://cwe.mitre.org/data/definitions/798.html"
+      ],
+      "evidence": [
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "sk_l************12"
+        }
+      ],
+      "metadata": {
+        "secret_length": 40,
+        "match_count": 1
+      }
+    },
+    {
+      "rule_id": "SEC-GCP-APIKEY",
+      "fingerprint": "c135a3d4a482bfea",
+      "title": "Google API key hardcoded in the package (AIza************jK)",
+      "severity": "High",
+      "confidence": "High",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-798",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "A value matching the Google API key pattern is embedded in the shipped package and was found in 2 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access. Unrestricted Google API keys can be billed against by anyone who extracts them.",
+      "remediation": "Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.",
+      "references": [
+        "https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage",
+        "https://cwe.mitre.org/data/definitions/798.html"
+      ],
+      "evidence": [
+        {
+          "location": "Info.plist:DemoBackendAPIKey",
+          "line": null,
+          "snippet": "AIza************jK"
+        },
+        {
+          "location": "Payload/VulnerableDemo.app/Info.plist:11",
+          "line": null,
+          "snippet": "XiPhoneOS� � !\u0019\"_\u0010\u000fCFBundleURLName_\u0010\u0012CFBundleURLSchemes�#$Xvulndemo]vulndemo-authS241_\u0010'AIza************jK\b T11.0�+,-((._\u0010\u0016NSAllowsArbitraryLoads_\u0010\"NSAllowsArb…"
+        }
+      ],
+      "metadata": {
+        "secret_length": 39,
+        "match_count": 2
+      }
+    },
+    {
+      "rule_id": "SEC-JWT",
+      "fingerprint": "458306e5140222a6",
+      "title": "JSON Web Token hardcoded in the package (eyJh************34)",
+      "severity": "High",
+      "confidence": "High",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-522",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "A value matching the JSON Web Token pattern is embedded in the shipped package and was found in 1 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access. A shipped JWT is a bearer credential; anyone holding it is that user until it expires.",
+      "remediation": "Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.",
+      "references": [
+        "https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage",
+        "https://cwe.mitre.org/data/definitions/798.html"
+      ],
+      "evidence": [
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "eyJh************34"
+        }
+      ],
+      "metadata": {
+        "secret_length": 68,
+        "match_count": 1
+      }
+    },
+    {
+      "rule_id": "IOS-ENTITLEMENT-GET-TASK-ALLOW",
+      "fingerprint": "3345145aecedd420",
+      "title": "Debug entitlement present in the shipped build",
+      "severity": "High",
+      "confidence": "High",
+      "owasp": {
+        "id": "M8",
+        "title": "Security Misconfiguration"
+      },
+      "cwe": "CWE-489",
+      "masvs": "MASVS-RESILIENCE",
+      "analyzer": "ios_config",
+      "description": "`get-task-allow` is set. This entitlement lets any debugger attach to the running process and is only meant for development builds. In a shipped app it means memory, keys and control flow are open to inspection on a device the attacker controls.",
+      "remediation": "Build for distribution with a provisioning profile that does not grant `get-task-allow`. App Store builds strip it automatically; its presence means this is an ad-hoc, enterprise or development build.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "embedded.mobileprovision",
+          "line": null,
+          "snippet": "get-task-allow = true"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "STO-IOS-KEYCHAIN-ACCESSIBLE",
+      "fingerprint": "e05293bcdf82a27e",
+      "title": "Keychain items are readable while the device is locked",
+      "severity": "High",
+      "confidence": "High",
+      "owasp": {
+        "id": "M9",
+        "title": "Insecure Data Storage"
+      },
+      "cwe": "CWE-311",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "storage",
+      "description": "The binary references `kSecAttrAccessibleAlways`. These accessibility classes keep the item readable even while the device is locked, so the data is not protected by the user's passcode and is available to an attacker with the locked device in hand.",
+      "remediation": "Use `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` for credentials, or `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` when a background task must reach the item.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "kSecAttrAccessibleAlways"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "CRY-ECB-MODE",
+      "fingerprint": "f6d17f99b17b2015",
+      "title": "Block cipher used in ECB mode",
+      "severity": "High",
+      "confidence": "High",
+      "owasp": {
+        "id": "M10",
+        "title": "Insufficient Cryptography"
+      },
+      "cwe": "CWE-327",
+      "masvs": "MASVS-CRYPTO",
+      "analyzer": "crypto",
+      "description": "A cipher is configured for ECB mode. ECB encrypts identical plaintext blocks to identical ciphertext blocks, so structure in the data survives encryption. The classic demonstration is an encrypted bitmap in which the original image is still recognisable. ECB also provides no integrity, so an attacker can reorder or replay blocks.",
+      "remediation": "Use GCM, which provides both confidentiality and integrity, with a unique nonce per encryption. If GCM is unavailable, use CBC with a random IV and authenticate the ciphertext with a separate HMAC key.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/327.html"
+      ],
+      "evidence": [
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "AES/ECB/PKCS5Padding"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "SEC-NAMED-RESOURCE",
+      "fingerprint": "2834f8aa932d1815",
+      "title": "Resource `db_password` holds what its name says is a credential",
+      "severity": "High",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-798",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "The resource `db_password` at `config.plist:db_password` contains a 20-character value. The name declares this is a credential, and resource values are trivially readable — `aapt dump` or any APK viewer prints them without decompiling anything. String resources are a common place for keys to end up because they feel like configuration rather than code.",
+      "remediation": "Rotate this credential and remove it from the package. Resource files, BuildConfig fields and Gradle properties all end up inside the shipped artifact — none of them is a secret store. Fetch the value from your backend at runtime instead.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "config.plist:db_password",
+          "line": null,
+          "snippet": "iOS_************rd"
+        }
+      ],
+      "metadata": {
+        "resource_name": "db_password",
+        "value_length": 20
+      }
+    },
+    {
+      "rule_id": "SEC-NAMED-RESOURCE",
+      "fingerprint": "d26724bfa7ba3f61",
+      "title": "Resource `analytics_client_secret` holds what its name says is a credential",
+      "severity": "High",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-798",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "The resource `analytics_client_secret` at `Info.plist:analytics_client_secret` contains a 38-character value. The name declares this is a credential, and resource values are trivially readable — `aapt dump` or any APK viewer prints them without decompiling anything. String resources are a common place for keys to end up because they feel like configuration rather than code.",
+      "remediation": "Rotate this credential and remove it from the package. Resource files, BuildConfig fields and Gradle properties all end up inside the shipped artifact — none of them is a secret store. Fetch the value from your backend at runtime instead.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "Info.plist:analytics_client_secret",
+          "line": null,
+          "snippet": "cs_l************De"
+        }
+      ],
+      "metadata": {
+        "resource_name": "anal************et",
+        "value_length": 38
+      }
+    },
+    {
+      "rule_id": "SEC-SLACK-HOOK",
+      "fingerprint": "50320516e0a5298f",
+      "title": "Slack incoming webhook hardcoded in the package (http************XX)",
+      "severity": "Medium",
+      "confidence": "High",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-798",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "A value matching the Slack incoming webhook pattern is embedded in the shipped package and was found in 2 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access.",
+      "remediation": "Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.",
+      "references": [
+        "https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage",
+        "https://cwe.mitre.org/data/definitions/798.html"
+      ],
+      "evidence": [
+        {
+          "location": "config.plist:slack_webhook",
+          "line": null,
+          "snippet": "http************XX"
+        },
+        {
+          "location": "Payload/VulnerableDemo.app/config.plist:6",
+          "line": null,
+          "snippet": "<key>slack_webhook</key><string>http************XX</string>"
+        }
+      ],
+      "metadata": {
+        "secret_length": 77,
+        "match_count": 2
+      }
+    },
+    {
+      "rule_id": "IOS-ATS-ARBITRARY-LOADS",
+      "fingerprint": "01c88a4d5aa0f47d",
+      "title": "App Transport Security is disabled globally",
+      "severity": "Medium",
+      "confidence": "High",
+      "owasp": {
+        "id": "M5",
+        "title": "Insecure Communication"
+      },
+      "cwe": "CWE-319",
+      "masvs": "MASVS-NETWORK",
+      "analyzer": "ios_config",
+      "description": "`NSAllowsArbitraryLoads` is true, which switches off ATS for every connection the app makes: cleartext HTTP is permitted, and TLS connections no longer have to meet the minimum version and cipher requirements ATS enforces. Exception domains are also declared, so on iOS 10+ the global flag is ignored for those specific domains — but it still applies to everything else.",
+      "remediation": "Remove `NSAllowsArbitraryLoads` and serve every endpoint over TLS 1.2+. Where one legacy host cannot be fixed yet, add just that host under `NSExceptionDomains` — App Review requires a justification for the global flag in any case.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/319.html"
+      ],
+      "evidence": [
+        {
+          "location": "Info.plist",
+          "line": null,
+          "snippet": "NSAllowsArbitraryLoads = true"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "IOS-ATS-EXCEPTION-DOMAINS",
+      "fingerprint": "aef54460538f4084",
+      "title": "ATS exceptions weaken TLS for 2 domain(s)",
+      "severity": "Medium",
+      "confidence": "High",
+      "owasp": {
+        "id": "M5",
+        "title": "Insecure Communication"
+      },
+      "cwe": "CWE-319",
+      "masvs": "MASVS-NETWORK",
+      "analyzer": "ios_config",
+      "description": "Specific domains are exempted from App Transport Security: they permit cleartext HTTP, drop the forward-secrecy requirement, or allow a TLS version below 1.2. Traffic to those hosts is weaker than the rest of the app's.",
+      "remediation": "Fix the server configuration and remove the exception. TLS 1.0 and 1.1 are deprecated (RFC 8996) and connections without forward secrecy are retrospectively decryptable if the server key is ever compromised.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "Info.plist",
+          "line": null,
+          "snippet": "insecure-ios-demo.example.com: NSExceptionAllowsInsecureHTTPLoads, NSExceptionRequiresForwardSecrecy, NSExceptionMinimumTLSVersion=TLSv1.0"
+        },
+        {
+          "location": "Info.plist",
+          "line": null,
+          "snippet": "legacy.example.com: NSThirdPartyExceptionAllowsInsecureHTTPLoads"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "IOS-ATS-WEB-CONTENT",
+      "fingerprint": "82c323abc2495b51",
+      "title": "App Transport Security exempts web content",
+      "severity": "Medium",
+      "confidence": "High",
+      "owasp": {
+        "id": "M5",
+        "title": "Insecure Communication"
+      },
+      "cwe": "CWE-319",
+      "masvs": "MASVS-NETWORK",
+      "analyzer": "ios_config",
+      "description": "`NSAllowsArbitraryLoadsInWebContent` is true, so ATS does not apply to web content. Traffic in that category may be cleartext or use TLS configurations ATS would otherwise reject.",
+      "remediation": "Remove `NSAllowsArbitraryLoadsInWebContent` unless a shipped feature depends on it, and load web content over HTTPS.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "Info.plist",
+          "line": null,
+          "snippet": "NSAllowsArbitraryLoadsInWebContent = true"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "IOS-PERMISSION-USAGE",
+      "fingerprint": "89393955712eb608",
+      "title": "Application requests 5 sensitive permission(s)",
+      "severity": "Medium",
+      "confidence": "High",
+      "owasp": {
+        "id": "M6",
+        "title": "Inadequate Privacy Controls"
+      },
+      "cwe": "CWE-359",
+      "masvs": "MASVS-PRIVACY",
+      "analyzer": "ios_config",
+      "description": "The app declares usage descriptions for: the camera (`NSCameraUsageDescription`), the address book (`NSContactsUsageDescription`), location at all times (`NSLocationAlwaysAndWhenInUseUsageDescription`), the microphone (`NSMicrophoneUsageDescription`), cross-app tracking (`NSUserTrackingUsageDescription`). 2 of these have a missing or very short justification string, which is what the user is shown at the permission prompt — a vague string means the user cannot make an informed decision, and App Review rejects it.",
+      "remediation": "Request only what a shipped feature needs, and write a usage string that names the specific feature and why it needs the data.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "Info.plist",
+          "line": null,
+          "snippet": "NSCameraUsageDescription: We need it."
+        },
+        {
+          "location": "Info.plist",
+          "line": null,
+          "snippet": "NSContactsUsageDescription: (empty)"
+        },
+        {
+          "location": "Info.plist",
+          "line": null,
+          "snippet": "NSLocationAlwaysAndWhenInUseUsageDescription: Track delivery vehicles on an active route."
+        },
+        {
+          "location": "Info.plist",
+          "line": null,
+          "snippet": "NSMicrophoneUsageDescription: Record audio notes attached to a job report."
+        },
+        {
+          "location": "Info.plist",
+          "line": null,
+          "snippet": "NSUserTrackingUsageDescription: Show ads that are relevant to you across other apps."
+        }
+      ],
+      "metadata": {
+        "vague_descriptions": [
+          "NSCameraUsageDescription",
+          "NSContactsUsageDescription"
+        ]
+      }
+    },
+    {
+      "rule_id": "IOS-FILE-SHARING",
+      "fingerprint": "7edadd38c40f6d3b",
+      "title": "Application exposes its Documents directory over file sharing",
+      "severity": "Medium",
+      "confidence": "High",
+      "owasp": {
+        "id": "M8",
+        "title": "Security Misconfiguration"
+      },
+      "cwe": "CWE-552",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "ios_config",
+      "description": "`UIFileSharingEnabled` is true together with `LSSupportsOpeningDocumentsInPlace`, so the app's Documents directory is visible in the Files app and over USB via iTunes/Finder. Anything the app writes there is readable, and replaceable, by anyone with access to the unlocked device — including files the app later reads back and trusts.",
+      "remediation": "Disable file sharing unless the app's purpose is document exchange. Keep anything sensitive in Library/ or Application Support/ rather than Documents/, and re-validate any file read back from a user-writable location.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/552.html"
+      ],
+      "evidence": [
+        {
+          "location": "Info.plist",
+          "line": null,
+          "snippet": "UIFileSharingEnabled = true"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "IOS-CUSTOM-URL-SCHEME",
+      "fingerprint": "8491809cb419dc32",
+      "title": "Application registers 2 custom URL scheme(s)",
+      "severity": "Medium",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M4",
+        "title": "Insufficient Input/Output Validation"
+      },
+      "cwe": "CWE-939",
+      "masvs": "MASVS-PLATFORM",
+      "analyzer": "ios_config",
+      "description": "The app registers the custom URL scheme(s) `vulndemo://`, `vulndemo-auth://`. Any app or web page can open these URLs and control the parameters the app receives. iOS does not verify scheme ownership: another app can register the same scheme, and if it is installed second the system's choice of handler is undefined — which is the basis of URL-scheme hijacking against OAuth callbacks.",
+      "remediation": "Validate and canonicalise every parameter arriving through `application(_:open:options:)`, and check the `sourceApplication` where it matters. For authentication callbacks use Universal Links bound to a domain you control, or `ASWebAuthenticationSession`, rather than a custom scheme.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/939.html"
+      ],
+      "evidence": [
+        {
+          "location": "Info.plist",
+          "line": null,
+          "snippet": "CFBundleURLSchemes: vulndemo"
+        },
+        {
+          "location": "Info.plist",
+          "line": null,
+          "snippet": "CFBundleURLSchemes: vulndemo-auth"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "NET-HTTP-URL",
+      "fingerprint": "a20d3a9676e22713",
+      "title": "Cleartext HTTP endpoints referenced (3 host(s))",
+      "severity": "Medium",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M5",
+        "title": "Insecure Communication"
+      },
+      "cwe": "CWE-319",
+      "masvs": "MASVS-NETWORK",
+      "analyzer": "network",
+      "description": "The package contains `http://` URLs pointing at `api.insecure-ios-demo.example.com`, `config.insecure-ios-demo.example.com`, `telemetry.insecure-ios-demo.example.com`. Traffic to these hosts is unencrypted and unauthenticated: it can be read and modified by anything on the network path. A URL in a string pool is not proof the app requests it at runtime — check the call sites — but each one is a candidate for interception.",
+      "remediation": "Move every endpoint to HTTPS. For URLs that are documentation links or namespace identifiers rather than requests, no change is needed beyond confirming that is what they are.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/319.html"
+      ],
+      "evidence": [
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "http://api.insecure-ios-demo.example.com/v1"
+        },
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "http://telemetry.insecure-ios-demo.example.com/e"
+        },
+        {
+          "location": "config.plist:backend_url",
+          "line": null,
+          "snippet": "http://config.insecure-ios-demo.example.com/settings"
+        }
+      ],
+      "metadata": {
+        "hosts": [
+          "api.insecure-ios-demo.example.com",
+          "config.insecure-ios-demo.example.com",
+          "telemetry.insecure-ios-demo.example.com"
+        ]
+      }
+    },
+    {
+      "rule_id": "CRY-WEAK-HASH-SHA1",
+      "fingerprint": "9aa1421e5bdf48c0",
+      "title": "Weak hash algorithm in use: SHA1",
+      "severity": "Medium",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M10",
+        "title": "Insufficient Cryptography"
+      },
+      "cwe": "CWE-328",
+      "masvs": "MASVS-CRYPTO",
+      "analyzer": "crypto",
+      "description": "The package requests `SHA1`. SHA-1 collisions are practical (SHAttered, 2017). This matters wherever the hash is relied on for integrity or identity — signature verification, tamper checks, deduplication of security-relevant data. It is not a problem where the hash is only a non-security checksum or cache key, so confirm how it is used.",
+      "remediation": "Use SHA-256 or SHA-3 for integrity and identity. For password storage no plain digest is appropriate — use Argon2id, scrypt or PBKDF2 with a per-user salt and a high iteration count.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/328.html"
+      ],
+      "evidence": [
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "SHA-1"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "SEC-ENTROPY",
+      "fingerprint": "b2dec4b106da8401",
+      "title": "High-entropy string may be an embedded secret",
+      "severity": "Medium",
+      "confidence": "Low",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-798",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "A 37-character string with 4.30 bits of entropy per character was found in the package. That is the statistical profile of a key or token rather than of ordinary program text, though it matches no known credential format — it could equally be a hash, a nonce or an encoded asset. Confirm manually.",
+      "remediation": "Check what this value is. If it is a credential, rotate it and move it out of the package; if it is benign, no action is needed.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "_OBJ************re"
+        }
+      ],
+      "metadata": {
+        "entropy": 4.304,
+        "length": 37,
+        "threshold": 4.3
+      }
+    },
+    {
+      "rule_id": "SEC-ENTROPY",
+      "fingerprint": "fa5c365b7536f9c1",
+      "title": "High-entropy string may be an embedded secret",
+      "severity": "Medium",
+      "confidence": "Low",
+      "owasp": {
+        "id": "M1",
+        "title": "Improper Credential Usage"
+      },
+      "cwe": "CWE-798",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "secrets",
+      "description": "A 38-character string with 5.04 bits of entropy per character was found in the package. That is the statistical profile of a key or token rather than of ordinary program text, though it matches no known credential format — it could equally be a hash, a nonce or an encoded asset. Confirm manually.",
+      "remediation": "Check what this value is. If it is a credential, rotate it and move it out of the package; if it is benign, no action is needed.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "Info.plist:analytics_client_secret",
+          "line": null,
+          "snippet": "cs_l************De"
+        }
+      ],
+      "metadata": {
+        "entropy": 5.037,
+        "length": 38,
+        "threshold": 4.3
+      }
+    },
+    {
+      "rule_id": "PRI-IOS-NSLOG",
+      "fingerprint": "a60c9e64ca258c6f",
+      "title": "Format strings suggest sensitive data is logged",
+      "severity": "Medium",
+      "confidence": "Low",
+      "owasp": {
+        "id": "M6",
+        "title": "Inadequate Privacy Controls"
+      },
+      "cwe": "CWE-532",
+      "masvs": "MASVS-PRIVACY",
+      "analyzer": "privacy",
+      "description": "The binary references NSLog/os_log and contains format strings that name credentials or personal data. NSLog output goes to the unified system log, where it persists and is visible to anyone with the device connected to a Mac.",
+      "remediation": "Use `os_log` with the default privacy level, which redacts dynamic values automatically, and never mark a value `%{public}@` unless it is genuinely safe to disclose.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "requesting %@ with password %@"
+        },
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "telemetry endpoint %@ token %@"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "STO-IOS-USERDEFAULTS",
+      "fingerprint": "f9963116d8f957eb",
+      "title": "Credential-shaped keys used with NSUserDefaults",
+      "severity": "Medium",
+      "confidence": "Low",
+      "owasp": {
+        "id": "M9",
+        "title": "Insecure Data Storage"
+      },
+      "cwe": "CWE-312",
+      "masvs": "MASVS-STORAGE",
+      "analyzer": "storage",
+      "description": "The binary references NSUserDefaults alongside key names that look like credentials: `@_kSecClassGenericPassword`, `DemoCredentialStore`, `_OBJC_CLASS_$_DemoCredentialStore`, `_OBJC_METACLASS_$_DemoCredentialStore`, `__OBJC_$_INSTANCE_METHODS_DemoCredentialStore`, `__OBJC_CLASS_RO_$_DemoCredentialStore`, `__OBJC_METACLASS_RO_$_DemoCredentialStore`, `_kSecClassGenericPassword`. NSUserDefaults is an unencrypted plist in the app container and is included in iTunes and iCloud backups, so anything stored there leaves the device with the backup.",
+      "remediation": "Put credentials in the Keychain with an appropriate `kSecAttrAccessible` value (`…WhenUnlockedThisDeviceOnly` for anything that should not migrate to a new device), and keep NSUserDefaults for non-sensitive preferences.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "NSUserDefaults key: @_kSecClassGenericPassword"
+        },
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "NSUserDefaults key: DemoCredentialStore"
+        },
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "NSUserDefaults key: _OBJC_CLASS_$_DemoCredentialStore"
+        },
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "NSUserDefaults key: _OBJC_METACLASS_$_DemoCredentialStore"
+        },
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "NSUserDefaults key: __OBJC_$_INSTANCE_METHODS_DemoCredentialStore"
+        },
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "NSUserDefaults key: __OBJC_CLASS_RO_$_DemoCredentialStore"
+        },
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "NSUserDefaults key: __OBJC_METACLASS_RO_$_DemoCredentialStore"
+        },
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "NSUserDefaults key: _kSecClassGenericPassword"
+        },
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "NSUserDefaults key: _objc_msgSend$persistToken:"
+        },
+        {
+          "location": "main binary (strings)",
+          "line": null,
+          "snippet": "NSUserDefaults key: auth_token"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "IOS-LOW-MIN-OS",
+      "fingerprint": "797f5d2ece4a6eb8",
+      "title": "Minimum iOS version 11.0 is well behind current releases",
+      "severity": "Low",
+      "confidence": "High",
+      "owasp": {
+        "id": "M8",
+        "title": "Security Misconfiguration"
+      },
+      "cwe": "CWE-1104",
+      "masvs": "MASVS-PLATFORM",
+      "analyzer": "ios_config",
+      "description": "`MinimumOSVersion` is 11.0. Devices on that release no longer receive security updates, and the app cannot rely on platform mitigations introduced since — so it must carry those protections itself.",
+      "remediation": "Raise the deployment target if the install base allows. While supporting older releases, do not assume newer ATS, Keychain or privacy defaults are in effect.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "Info.plist",
+          "line": null,
+          "snippet": "MinimumOSVersion = 11.0"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "BIN-NO-JAILBREAK-DETECTION",
+      "fingerprint": "b5b9f9d2f0b85d16",
+      "title": "No jailbreak detection was found",
+      "severity": "Low",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M7",
+        "title": "Insufficient Binary Protections"
+      },
+      "cwe": "CWE-693",
+      "masvs": "MASVS-RESILIENCE",
+      "analyzer": "binary",
+      "description": "No jailbreak-detection markers were found (no checks for Cydia, MobileSubstrate, apt, or writability outside the sandbox). On a jailbroken device the app's Keychain items, container files and runtime are all reachable. Reported as an absent hardening measure, not a defect.",
+      "remediation": "For an app handling sensitive data, add jailbreak detection and use the result to inform server-side risk decisions rather than relying on it alone.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "vulnerable-demo.ipa",
+          "line": null,
+          "snippet": "no jailbreak-detection markers found"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "BIN-NO-ANTI-DEBUG",
+      "fingerprint": "0b947a8397e0a45b",
+      "title": "No anti-debugging checks were found",
+      "severity": "Low",
+      "confidence": "Low",
+      "owasp": {
+        "id": "M7",
+        "title": "Insufficient Binary Protections"
+      },
+      "cwe": "CWE-693",
+      "masvs": "MASVS-RESILIENCE",
+      "analyzer": "binary",
+      "description": "No runtime debugger detection was found (`Debug.isDebuggerConnected`, a TracerPid check, `ptrace`/`PT_DENY_ATTACH`). Attaching a debugger or a Frida script to a running app lets an attacker read decrypted data, change control flow and bypass client-side checks. Reported as an absent hardening measure — anti-debugging is bypassable and only raises cost.",
+      "remediation": "For an app protecting high-value assets, detect attached debuggers and instrumentation frameworks at runtime and report the signal to the server for risk scoring rather than only reacting on-device.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "vulnerable-demo.ipa",
+          "line": null,
+          "snippet": "no anti-debugging markers found in the package"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "BIN-IOS-NOT-ENCRYPTED",
+      "fingerprint": "2cb2273d95269e6c",
+      "title": "Main binary is not FairPlay-encrypted",
+      "severity": "Info",
+      "confidence": "High",
+      "owasp": {
+        "id": "M7",
+        "title": "Insufficient Binary Protections"
+      },
+      "cwe": null,
+      "masvs": "MASVS-RESILIENCE",
+      "analyzer": "binary",
+      "description": "The Mach-O binary's encryption info indicates it is not FairPlay-encrypted (cryptid = 0). This is expected for a development or enterprise build, and for any IPA that has already been decrypted; App Store copies are encrypted until they are installed. It means the binary's code and strings can be read directly with no decryption step.",
+      "remediation": "No action if this is a development build. Note that App Store encryption is a distribution control, not a security boundary — it is removed on-device and by any jailbroken dumper.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "main binary",
+          "line": null,
+          "snippet": "cryptid = 0"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "rule_id": "DEP-INVENTORY",
+      "fingerprint": "8a5e5ef5a89008b9",
+      "title": "1 third-party components identified",
+      "severity": "Info",
+      "confidence": "Medium",
+      "owasp": {
+        "id": "M2",
+        "title": "Inadequate Supply Chain Security"
+      },
+      "cwe": null,
+      "masvs": "MASVS-CODE",
+      "analyzer": "dependencies",
+      "description": "1 bundled component(s) were identified, 0 of them with a determinable version. 1 could not be version-matched, so they were not checked for known vulnerabilities — a built package has no dependency manifest, and a library that embeds no version constant cannot be pinned down statically. OSV.dev lookups were skipped because network access is disabled; re-run with --online to check these against known advisories",
+      "remediation": "Generate a software bill of materials at build time — where the dependency graph is actually known — and check that against an advisory feed in CI, rather than relying on what can be recovered from a compiled artifact.",
+      "references": [],
+      "evidence": [
+        {
+          "location": "DemoAnalytics.framework",
+          "line": null,
+          "snippet": "DemoAnalytics (version unknown)"
+        }
+      ],
+      "metadata": {
+        "components": [
+          {
+            "name": "DemoAnalytics",
+            "version": null,
+            "ecosystem": "SwiftURL",
+            "version_source": ""
+          }
+        ],
+        "network_enabled": false
+      }
+    }
+  ],
+  "owasp_coverage": {
+    "M1": {
+      "title": "Improper Credential Usage",
+      "finding_count": 10
+    },
+    "M2": {
+      "title": "Inadequate Supply Chain Security",
+      "finding_count": 1
+    },
+    "M3": {
+      "title": "Insecure Authentication/Authorization",
+      "finding_count": 0
+    },
+    "M4": {
+      "title": "Insufficient Input/Output Validation",
+      "finding_count": 1
+    },
+    "M5": {
+      "title": "Insecure Communication",
+      "finding_count": 4
+    },
+    "M6": {
+      "title": "Inadequate Privacy Controls",
+      "finding_count": 2
+    },
+    "M7": {
+      "title": "Insufficient Binary Protections",
+      "finding_count": 3
+    },
+    "M8": {
+      "title": "Security Misconfiguration",
+      "finding_count": 3
+    },
+    "M9": {
+      "title": "Insecure Data Storage",
+      "finding_count": 2
+    },
+    "M10": {
+      "title": "Insufficient Cryptography",
+      "finding_count": 2
+    }
+  },
+  "stats": {
+    "files_scanned": 5,
+    "bytes_scanned": 71574,
+    "strings_extracted": 197,
+    "duration_seconds": 0.01,
+    "decompilers_used": [
+      "built-in (pure Python)"
+    ],
+    "degraded": []
+  },
+  "errors": []
+}

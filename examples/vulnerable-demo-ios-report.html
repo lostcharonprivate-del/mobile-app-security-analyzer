@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security report — vulnerable-demo.ipa</title>
+<style>
+  :root {
+    --ink: #14181d; --muted: #5b6672; --faint: #8a949e;
+    --rule: #e2e6ea; --bg: #ffffff; --panel: #f7f8fa; --panel-2: #eef1f4;
+    --critical: #a4133c; --high: #c1440e; --medium: #9a6700; --low: #2b6cb0; --info: #5b6672;
+    --accent: #1f3a5f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 28px 80px; }
+  header.masthead { border-bottom: 3px solid var(--ink); padding-bottom: 20px; margin-bottom: 28px; }
+  .eyebrow { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: 27px; margin: 8px 0 4px; letter-spacing: -.01em; }
+  h2 { font-size: 19px; margin: 40px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--rule); letter-spacing: -.01em; }
+  h3 { font-size: 15px; margin: 0; }
+  .sub { color: var(--muted); font-size: 13.5px; }
+  code, .mono { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; }
+
+  .notice { background: #fff8e6; border: 1px solid #f0d9a0; border-left: 4px solid #d99b00;
+            padding: 14px 16px; border-radius: 4px; margin: 22px 0; font-size: 13.5px; }
+  .notice strong { display: block; margin-bottom: 4px; }
+
+  .scorecard { display: grid; grid-template-columns: 168px 1fr; gap: 26px; align-items: center;
+               background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 22px 24px; }
+  .grade { text-align: center; }
+  .grade .letter { font-size: 62px; font-weight: 700; line-height: 1; letter-spacing: -.03em; }
+  .grade .score { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .grade-A .letter { color: #216e39; } .grade-B .letter { color: #3f7a3f; }
+  .grade-C .letter { color: var(--medium); } .grade-D .letter { color: var(--high); }
+  .grade-F .letter { color: var(--critical); }
+
+  .sevgrid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .sevpill { border: 1px solid var(--rule); background: #fff; border-radius: 999px;
+             padding: 5px 13px; font-size: 12.5px; font-weight: 600; }
+  .sevpill .n { font-weight: 700; }
+  .sev-Critical { color: var(--critical); border-color: #f0c4d0; }
+  .sev-High { color: var(--high); border-color: #f2cfbb; }
+  .sev-Medium { color: var(--medium); border-color: #ecdca6; }
+  .sev-Low { color: var(--low); border-color: #c3d9ee; }
+  .sev-Info { color: var(--info); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-size: 11px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .kv td:first-child { color: var(--muted); width: 210px; white-space: nowrap; }
+  .kv td:last-child { overflow-wrap: anywhere; }
+  .scroll { overflow-x: auto; }
+
+  .owasp-row td:first-child { font-weight: 700; width: 54px; }
+  .count-0 { color: var(--faint); }
+  .count-hit { font-weight: 700; }
+
+  .finding { border: 1px solid var(--rule); border-radius: 8px; margin: 14px 0; overflow: hidden; }
+  .finding > summary { padding: 13px 16px; cursor: pointer; display: flex; gap: 12px;
+                       align-items: baseline; background: var(--panel); list-style: none; }
+  .finding > summary::-webkit-details-marker { display: none; }
+  .finding > summary::before { content: "▸"; color: var(--faint); font-size: 11px; }
+  .finding[open] > summary::before { content: "▾"; }
+  .finding[open] > summary { border-bottom: 1px solid var(--rule); }
+  .badge { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+           padding: 3px 8px; border-radius: 3px; color: #fff; white-space: nowrap; }
+  .badge.sev-Critical { background: var(--critical); } .badge.sev-High { background: var(--high); }
+  .badge.sev-Medium { background: var(--medium); } .badge.sev-Low { background: var(--low); }
+  .badge.sev-Info { background: var(--info); }
+  .summary-title { flex: 1; font-weight: 600; }
+  .summary-meta { color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .body { padding: 16px 18px 18px; }
+  .label { font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase;
+           color: var(--muted); font-weight: 700; margin: 16px 0 5px; }
+  .body > .label:first-child { margin-top: 0; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+  .tag { font-size: 11.5px; background: var(--panel-2); border-radius: 3px; padding: 2px 8px; color: var(--muted); }
+  .evidence { background: #fbfcfd; border: 1px solid var(--rule); border-radius: 5px;
+              padding: 4px 0; }
+  .ev-item { padding: 7px 12px; border-bottom: 1px solid #eef1f4; }
+  .ev-item:last-child { border-bottom: none; }
+  .loc { color: var(--accent); font-weight: 600; overflow-wrap: anywhere; }
+  .snip { color: #33404d; overflow-wrap: anywhere; margin-top: 2px; }
+  .snip::before { content: "› "; color: var(--faint); }
+  ul.refs { margin: 4px 0 0; padding-left: 18px; font-size: 13px; }
+  ul.refs a { color: var(--accent); }
+  .empty { color: var(--muted); font-style: italic; padding: 12px 0; }
+  footer { margin-top: 52px; padding-top: 18px; border-top: 1px solid var(--rule);
+           color: var(--faint); font-size: 12px; }
+  @media print {
+    .finding { break-inside: avoid; }
+    .finding > summary::before { content: ""; }
+    details { display: block; }
+    details > .body { display: block !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">Mobile Application Security Assessment</div>
+  <h1>vulnerable-demo.ipa</h1>
+  <div class="sub">
+    com.masa.vulnerable-ios
+ · version 2.4.1    · ios · generated 2026-09-07 00:04:09 UTC
+  </div>
+</header>
+
+<div class="notice">
+  <strong>Authorised use only</strong>
+  This report was produced by static analysis of a package supplied to the tool. Analyse
+  only applications you own or have explicit written authorisation to test — unauthorised
+  analysis of third-party applications may breach their terms of service or the law in your
+  jurisdiction. Findings are produced by pattern matching over decompiled code and require
+  human confirmation; the tool never executed any code from the package.
+</div>
+
+<div class="scorecard">
+  <div class="grade grade-F">
+    <div class="letter">F</div>
+    <div class="score">98 / 100 risk</div>
+  </div>
+  <div>
+    <div class="sevgrid">
+      <span class="sevpill sev-Critical"><span class="n">3</span> Critical</span>
+      <span class="sevpill sev-High"><span class="n">7</span> High</span>
+      <span class="sevpill sev-Medium"><span class="n">13</span> Medium</span>
+      <span class="sevpill sev-Low"><span class="n">3</span> Low</span>
+      <span class="sevpill sev-Info"><span class="n">2</span> Info</span>
+    </div>
+    <div class="sub">
+      Critical issues; do not ship in this state. 28 finding(s) across
+      9 of 10 OWASP Mobile Top 10 categories.
+      Scanned 5 files and 197 strings
+      in 0.01s.
+    </div>
+  </div>
+</div>
+
+<h2>Application</h2>
+<div class="scroll">
+<table class="kv">
+  <tr><td>File</td><td class="mono">vulnerable-demo.ipa (7,387 bytes)</td></tr>
+  <tr><td>SHA-256</td><td class="mono">9193e47f4d1f09b5c2750a665d23c114ef950ba9f8486569382c49d2b04ff439</td></tr>
+  <tr><td>Package / bundle ID</td><td class="mono">com.masa.vulnerable-ios</td></tr>
+  <tr><td>Version</td><td>2.4.1 (build 241)</td></tr>
+  <tr><td>Minimum iOS version</td><td>11.0</td></tr>
+  <tr><td>Permissions requested</td><td>
+<span class="mono">NSCameraUsageDescription, NSContactsUsageDescription, NSLocationAlwaysAndWhenInUseUsageDescription, NSMicrophoneUsageDescription, NSUserTrackingUsageDescription</span>  </td></tr>
+  <tr><td>Signing</td><td>
+  </td></tr>
+  <tr><td>Third-party components</td><td>
+      <div class="mono">DemoAnalytics (version unknown)</div>
+  </td></tr>
+  <tr><td>Decompilers used</td><td>built-in (pure Python)</td></tr>
+</table>
+</div>
+
+<h2>OWASP Mobile Top 10 (2024) coverage</h2>
+<div class="scroll">
+<table>
+  <thead><tr><th>ID</th><th>Risk</th><th>Findings</th></tr></thead>
+  <tbody>
+    <tr class="owasp-row">
+      <td>M1</td>
+      <td>Improper Credential Usage</td>
+      <td class="count-hit">
+        10
+      </td>
+    </tr>
+    <tr class="owasp-row">
+      <td>M2</td>
+      <td>Inadequate Supply Chain Security</td>
+      <td class="count-hit">
+        1
+      </td>
+    </tr>
+    <tr class="owasp-row">
+      <td>M3</td>
+      <td>Insecure Authentication/Authorization</td>
+      <td class="count-0">
+        0
+      </td>
+    </tr>
+    <tr class="owasp-row">
+      <td>M4</td>
+      <td>Insufficient Input/Output Validation</td>
+      <td class="count-hit">
+        1
+      </td>
+    </tr>
+    <tr class="owasp-row">
+      <td>M5</td>
+      <td>Insecure Communication</td>
+      <td class="count-hit">
+        4
+      </td>
+    </tr>
+    <tr class="owasp-row">
+      <td>M6</td>
+      <td>Inadequate Privacy Controls</td>
+      <td class="count-hit">
+        2
+      </td>
+    </tr>
+    <tr class="owasp-row">
+      <td>M7</td>
+      <td>Insufficient Binary Protections</td>
+      <td class="count-hit">
+        3
+      </td>
+    </tr>
+    <tr class="owasp-row">
+      <td>M8</td>
+      <td>Security Misconfiguration</td>
+      <td class="count-hit">
+        3
+      </td>
+    </tr>
+    <tr class="owasp-row">
+      <td>M9</td>
+      <td>Insecure Data Storage</td>
+      <td class="count-hit">
+        2
+      </td>
+    </tr>
+    <tr class="owasp-row">
+      <td>M10</td>
+      <td>Insufficient Cryptography</td>
+      <td class="count-hit">
+        2
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Findings</h2>
+
+  <h3 style="margin-top:30px">M1 · Improper Credential Usage</h3>
+  <div class="sub" style="margin-bottom:8px">Hardcoded credentials, or credentials transmitted/stored insecurely, let an attacker who reads the package authenticate as the app or its users.</div>
+
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-Critical">Critical</span>
+      <span class="summary-title">AWS access key ID hardcoded in the package (AKIA************VR)</span>
+      <span class="summary-meta mono">SEC-AWS-AKID</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-798</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A value matching the AWS access key ID pattern is embedded in the shipped package and was found in 1 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access. AWS access key IDs are paired with a secret key; both are usually shipped together.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">AKIA************VR</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage" rel="noreferrer noopener nofollow">https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage</a>
+        </li>
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/798.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/798.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-Critical">Critical</span>
+      <span class="summary-title">GitHub token hardcoded in the package (ghp_************Gg)</span>
+      <span class="summary-meta mono">SEC-GITHUB-PAT</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-798</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A value matching the GitHub token pattern is embedded in the shipped package and was found in 1 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">ghp_************Gg</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage" rel="noreferrer noopener nofollow">https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage</a>
+        </li>
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/798.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/798.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-Critical">Critical</span>
+      <span class="summary-title">Stripe secret key hardcoded in the package (sk_l************12)</span>
+      <span class="summary-meta mono">SEC-STRIPE</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-798</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A value matching the Stripe secret key pattern is embedded in the shipped package and was found in 1 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">sk_l************12</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage" rel="noreferrer noopener nofollow">https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage</a>
+        </li>
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/798.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/798.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">Google API key hardcoded in the package (AIza************jK)</span>
+      <span class="summary-meta mono">SEC-GCP-APIKEY</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-798</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A value matching the Google API key pattern is embedded in the shipped package and was found in 2 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access. Unrestricted Google API keys can be billed against by anyone who extracts them.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.</div>
+
+      <div class="label">Evidence (2)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">Info.plist:DemoBackendAPIKey</div>
+<div class="snip mono">AIza************jK</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">Payload/VulnerableDemo.app/Info.plist:11</div>
+<div class="snip mono">XiPhoneOS� � !&#34;_CFBundleURLName_CFBundleURLSchemes�#$Xvulndemo]vulndemo-authS241_&#39;AIza************jK T11.0�+,-((._NSAllowsArbitraryLoads_&#34;NSAllowsArb…</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage" rel="noreferrer noopener nofollow">https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage</a>
+        </li>
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/798.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/798.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">JSON Web Token hardcoded in the package (eyJh************34)</span>
+      <span class="summary-meta mono">SEC-JWT</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-522</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A value matching the JSON Web Token pattern is embedded in the shipped package and was found in 1 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access. A shipped JWT is a bearer credential; anyone holding it is that user until it expires.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">eyJh************34</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage" rel="noreferrer noopener nofollow">https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage</a>
+        </li>
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/798.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/798.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">Resource `db_password` holds what its name says is a credential</span>
+      <span class="summary-meta mono">SEC-NAMED-RESOURCE</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-798</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The resource `db_password` at `config.plist:db_password` contains a 20-character value. The name declares this is a credential, and resource values are trivially readable — `aapt dump` or any APK viewer prints them without decompiling anything. String resources are a common place for keys to end up because they feel like configuration rather than code.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Rotate this credential and remove it from the package. Resource files, BuildConfig fields and Gradle properties all end up inside the shipped artifact — none of them is a secret store. Fetch the value from your backend at runtime instead.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">config.plist:db_password</div>
+<div class="snip mono">iOS_************rd</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">Resource `analytics_client_secret` holds what its name says is a credential</span>
+      <span class="summary-meta mono">SEC-NAMED-RESOURCE</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-798</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The resource `analytics_client_secret` at `Info.plist:analytics_client_secret` contains a 38-character value. The name declares this is a credential, and resource values are trivially readable — `aapt dump` or any APK viewer prints them without decompiling anything. String resources are a common place for keys to end up because they feel like configuration rather than code.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Rotate this credential and remove it from the package. Resource files, BuildConfig fields and Gradle properties all end up inside the shipped artifact — none of them is a secret store. Fetch the value from your backend at runtime instead.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">Info.plist:analytics_client_secret</div>
+<div class="snip mono">cs_l************De</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">High-entropy string may be an embedded secret</span>
+      <span class="summary-meta mono">SEC-ENTROPY</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-798</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: Low</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A 37-character string with 4.30 bits of entropy per character was found in the package. That is the statistical profile of a key or token rather than of ordinary program text, though it matches no known credential format — it could equally be a hash, a nonce or an encoded asset. Confirm manually.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Check what this value is. If it is a credential, rotate it and move it out of the package; if it is benign, no action is needed.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">_OBJ************re</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">High-entropy string may be an embedded secret</span>
+      <span class="summary-meta mono">SEC-ENTROPY</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-798</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: Low</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A 38-character string with 5.04 bits of entropy per character was found in the package. That is the statistical profile of a key or token rather than of ordinary program text, though it matches no known credential format — it could equally be a hash, a nonce or an encoded asset. Confirm manually.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Check what this value is. If it is a credential, rotate it and move it out of the package; if it is benign, no action is needed.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">Info.plist:analytics_client_secret</div>
+<div class="snip mono">cs_l************De</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">Slack incoming webhook hardcoded in the package (http************XX)</span>
+      <span class="summary-meta mono">SEC-SLACK-HOOK</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-798</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A value matching the Slack incoming webhook pattern is embedded in the shipped package and was found in 2 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.</div>
+
+      <div class="label">Evidence (2)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">config.plist:slack_webhook</div>
+<div class="snip mono">http************XX</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">Payload/VulnerableDemo.app/config.plist:6</div>
+<div class="snip mono">&lt;key&gt;slack_webhook&lt;/key&gt;&lt;string&gt;http************XX&lt;/string&gt;</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage" rel="noreferrer noopener nofollow">https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage</a>
+        </li>
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/798.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/798.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <h3 style="margin-top:30px">M2 · Inadequate Supply Chain Security</h3>
+  <div class="sub" style="margin-bottom:8px">Third-party components bundled into the app carry their own vulnerabilities, which the app inherits without the developer writing a line of vulnerable code.</div>
+
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Info">Info</span>
+      <span class="summary-title">1 third-party components identified</span>
+      <span class="summary-meta mono">DEP-INVENTORY</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M2 Inadequate Supply Chain Security</span>
+<span class="tag">MASVS-CODE</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: dependencies</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>1 bundled component(s) were identified, 0 of them with a determinable version. 1 could not be version-matched, so they were not checked for known vulnerabilities — a built package has no dependency manifest, and a library that embeds no version constant cannot be pinned down statically. OSV.dev lookups were skipped because network access is disabled; re-run with --online to check these against known advisories</div>
+
+      <div class="label">How to fix it</div>
+      <div>Generate a software bill of materials at build time — where the dependency graph is actually known — and check that against an advisory feed in CI, rather than relying on what can be recovered from a compiled artifact.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">DemoAnalytics.framework</div>
+<div class="snip mono">DemoAnalytics (version unknown)</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <h3 style="margin-top:30px">M4 · Insufficient Input/Output Validation</h3>
+  <div class="sub" style="margin-bottom:8px">Data from intents, URL schemes, WebViews or remote responses is trusted without validation, opening injection and code-execution surfaces.</div>
+
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">Application registers 2 custom URL scheme(s)</span>
+      <span class="summary-meta mono">IOS-CUSTOM-URL-SCHEME</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M4 Insufficient Input/Output Validation</span>
+<span class="tag">CWE-939</span><span class="tag">MASVS-PLATFORM</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: ios_config</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The app registers the custom URL scheme(s) `vulndemo://`, `vulndemo-auth://`. Any app or web page can open these URLs and control the parameters the app receives. iOS does not verify scheme ownership: another app can register the same scheme, and if it is installed second the system&#39;s choice of handler is undefined — which is the basis of URL-scheme hijacking against OAuth callbacks.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Validate and canonicalise every parameter arriving through `application(_:open:options:)`, and check the `sourceApplication` where it matters. For authentication callbacks use Universal Links bound to a domain you control, or `ASWebAuthenticationSession`, rather than a custom scheme.</div>
+
+      <div class="label">Evidence (2)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">Info.plist</div>
+<div class="snip mono">CFBundleURLSchemes: vulndemo</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">Info.plist</div>
+<div class="snip mono">CFBundleURLSchemes: vulndemo-auth</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/939.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/939.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <h3 style="margin-top:30px">M5 · Insecure Communication</h3>
+  <div class="sub" style="margin-bottom:8px">Traffic that is unencrypted, or encrypted with validation disabled, can be read or modified by anyone on the network path.</div>
+
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">App Transport Security is disabled globally</span>
+      <span class="summary-meta mono">IOS-ATS-ARBITRARY-LOADS</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M5 Insecure Communication</span>
+<span class="tag">CWE-319</span><span class="tag">MASVS-NETWORK</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: ios_config</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>`NSAllowsArbitraryLoads` is true, which switches off ATS for every connection the app makes: cleartext HTTP is permitted, and TLS connections no longer have to meet the minimum version and cipher requirements ATS enforces. Exception domains are also declared, so on iOS 10+ the global flag is ignored for those specific domains — but it still applies to everything else.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Remove `NSAllowsArbitraryLoads` and serve every endpoint over TLS 1.2+. Where one legacy host cannot be fixed yet, add just that host under `NSExceptionDomains` — App Review requires a justification for the global flag in any case.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">Info.plist</div>
+<div class="snip mono">NSAllowsArbitraryLoads = true</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/319.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/319.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">ATS exceptions weaken TLS for 2 domain(s)</span>
+      <span class="summary-meta mono">IOS-ATS-EXCEPTION-DOMAINS</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M5 Insecure Communication</span>
+<span class="tag">CWE-319</span><span class="tag">MASVS-NETWORK</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: ios_config</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>Specific domains are exempted from App Transport Security: they permit cleartext HTTP, drop the forward-secrecy requirement, or allow a TLS version below 1.2. Traffic to those hosts is weaker than the rest of the app&#39;s.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Fix the server configuration and remove the exception. TLS 1.0 and 1.1 are deprecated (RFC 8996) and connections without forward secrecy are retrospectively decryptable if the server key is ever compromised.</div>
+
+      <div class="label">Evidence (2)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">Info.plist</div>
+<div class="snip mono">insecure-ios-demo.example.com: NSExceptionAllowsInsecureHTTPLoads, NSExceptionRequiresForwardSecrecy, NSExceptionMinimumTLSVersion=TLSv1.0</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">Info.plist</div>
+<div class="snip mono">legacy.example.com: NSThirdPartyExceptionAllowsInsecureHTTPLoads</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">App Transport Security exempts web content</span>
+      <span class="summary-meta mono">IOS-ATS-WEB-CONTENT</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M5 Insecure Communication</span>
+<span class="tag">CWE-319</span><span class="tag">MASVS-NETWORK</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: ios_config</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>`NSAllowsArbitraryLoadsInWebContent` is true, so ATS does not apply to web content. Traffic in that category may be cleartext or use TLS configurations ATS would otherwise reject.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Remove `NSAllowsArbitraryLoadsInWebContent` unless a shipped feature depends on it, and load web content over HTTPS.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">Info.plist</div>
+<div class="snip mono">NSAllowsArbitraryLoadsInWebContent = true</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">Cleartext HTTP endpoints referenced (3 host(s))</span>
+      <span class="summary-meta mono">NET-HTTP-URL</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M5 Insecure Communication</span>
+<span class="tag">CWE-319</span><span class="tag">MASVS-NETWORK</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: network</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The package contains `http://` URLs pointing at `api.insecure-ios-demo.example.com`, `config.insecure-ios-demo.example.com`, `telemetry.insecure-ios-demo.example.com`. Traffic to these hosts is unencrypted and unauthenticated: it can be read and modified by anything on the network path. A URL in a string pool is not proof the app requests it at runtime — check the call sites — but each one is a candidate for interception.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Move every endpoint to HTTPS. For URLs that are documentation links or namespace identifiers rather than requests, no change is needed beyond confirming that is what they are.</div>
+
+      <div class="label">Evidence (3)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">http://api.insecure-ios-demo.example.com/v1</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">http://telemetry.insecure-ios-demo.example.com/e</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">config.plist:backend_url</div>
+<div class="snip mono">http://config.insecure-ios-demo.example.com/settings</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/319.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/319.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <h3 style="margin-top:30px">M6 · Inadequate Privacy Controls</h3>
+  <div class="sub" style="margin-bottom:8px">Personal data is collected, logged or shared more broadly than the app&#39;s function requires, or than the user was told.</div>
+
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">Application requests 5 sensitive permission(s)</span>
+      <span class="summary-meta mono">IOS-PERMISSION-USAGE</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M6 Inadequate Privacy Controls</span>
+<span class="tag">CWE-359</span><span class="tag">MASVS-PRIVACY</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: ios_config</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The app declares usage descriptions for: the camera (`NSCameraUsageDescription`), the address book (`NSContactsUsageDescription`), location at all times (`NSLocationAlwaysAndWhenInUseUsageDescription`), the microphone (`NSMicrophoneUsageDescription`), cross-app tracking (`NSUserTrackingUsageDescription`). 2 of these have a missing or very short justification string, which is what the user is shown at the permission prompt — a vague string means the user cannot make an informed decision, and App Review rejects it.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Request only what a shipped feature needs, and write a usage string that names the specific feature and why it needs the data.</div>
+
+      <div class="label">Evidence (5)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">Info.plist</div>
+<div class="snip mono">NSCameraUsageDescription: We need it.</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">Info.plist</div>
+<div class="snip mono">NSContactsUsageDescription: (empty)</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">Info.plist</div>
+<div class="snip mono">NSLocationAlwaysAndWhenInUseUsageDescription: Track delivery vehicles on an active route.</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">Info.plist</div>
+<div class="snip mono">NSMicrophoneUsageDescription: Record audio notes attached to a job report.</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">Info.plist</div>
+<div class="snip mono">NSUserTrackingUsageDescription: Show ads that are relevant to you across other apps.</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">Format strings suggest sensitive data is logged</span>
+      <span class="summary-meta mono">PRI-IOS-NSLOG</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M6 Inadequate Privacy Controls</span>
+<span class="tag">CWE-532</span><span class="tag">MASVS-PRIVACY</span>        <span class="tag">confidence: Low</span>
+        <span class="tag">analyzer: privacy</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The binary references NSLog/os_log and contains format strings that name credentials or personal data. NSLog output goes to the unified system log, where it persists and is visible to anyone with the device connected to a Mac.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Use `os_log` with the default privacy level, which redacts dynamic values automatically, and never mark a value `%{public}@` unless it is genuinely safe to disclose.</div>
+
+      <div class="label">Evidence (2)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">requesting %@ with password %@</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">telemetry endpoint %@ token %@</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <h3 style="margin-top:30px">M7 · Insufficient Binary Protections</h3>
+  <div class="sub" style="margin-bottom:8px">The shipped binary offers no resistance to inspection or tampering, making reverse engineering and repackaging cheap.</div>
+
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Low">Low</span>
+      <span class="summary-title">No anti-debugging checks were found</span>
+      <span class="summary-meta mono">BIN-NO-ANTI-DEBUG</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M7 Insufficient Binary Protections</span>
+<span class="tag">CWE-693</span><span class="tag">MASVS-RESILIENCE</span>        <span class="tag">confidence: Low</span>
+        <span class="tag">analyzer: binary</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>No runtime debugger detection was found (`Debug.isDebuggerConnected`, a TracerPid check, `ptrace`/`PT_DENY_ATTACH`). Attaching a debugger or a Frida script to a running app lets an attacker read decrypted data, change control flow and bypass client-side checks. Reported as an absent hardening measure — anti-debugging is bypassable and only raises cost.</div>
+
+      <div class="label">How to fix it</div>
+      <div>For an app protecting high-value assets, detect attached debuggers and instrumentation frameworks at runtime and report the signal to the server for risk scoring rather than only reacting on-device.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">vulnerable-demo.ipa</div>
+<div class="snip mono">no anti-debugging markers found in the package</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Low">Low</span>
+      <span class="summary-title">No jailbreak detection was found</span>
+      <span class="summary-meta mono">BIN-NO-JAILBREAK-DETECTION</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M7 Insufficient Binary Protections</span>
+<span class="tag">CWE-693</span><span class="tag">MASVS-RESILIENCE</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: binary</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>No jailbreak-detection markers were found (no checks for Cydia, MobileSubstrate, apt, or writability outside the sandbox). On a jailbroken device the app&#39;s Keychain items, container files and runtime are all reachable. Reported as an absent hardening measure, not a defect.</div>
+
+      <div class="label">How to fix it</div>
+      <div>For an app handling sensitive data, add jailbreak detection and use the result to inform server-side risk decisions rather than relying on it alone.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">vulnerable-demo.ipa</div>
+<div class="snip mono">no jailbreak-detection markers found</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Info">Info</span>
+      <span class="summary-title">Main binary is not FairPlay-encrypted</span>
+      <span class="summary-meta mono">BIN-IOS-NOT-ENCRYPTED</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M7 Insufficient Binary Protections</span>
+<span class="tag">MASVS-RESILIENCE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: binary</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The Mach-O binary&#39;s encryption info indicates it is not FairPlay-encrypted (cryptid = 0). This is expected for a development or enterprise build, and for any IPA that has already been decrypted; App Store copies are encrypted until they are installed. It means the binary&#39;s code and strings can be read directly with no decryption step.</div>
+
+      <div class="label">How to fix it</div>
+      <div>No action if this is a development build. Note that App Store encryption is a distribution control, not a security boundary — it is removed on-device and by any jailbroken dumper.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">main binary</div>
+<div class="snip mono">cryptid = 0</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <h3 style="margin-top:30px">M8 · Security Misconfiguration</h3>
+  <div class="sub" style="margin-bottom:8px">Insecure defaults or debug settings left enabled in the shipped build.</div>
+
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">Debug entitlement present in the shipped build</span>
+      <span class="summary-meta mono">IOS-ENTITLEMENT-GET-TASK-ALLOW</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M8 Security Misconfiguration</span>
+<span class="tag">CWE-489</span><span class="tag">MASVS-RESILIENCE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: ios_config</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>`get-task-allow` is set. This entitlement lets any debugger attach to the running process and is only meant for development builds. In a shipped app it means memory, keys and control flow are open to inspection on a device the attacker controls.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Build for distribution with a provisioning profile that does not grant `get-task-allow`. App Store builds strip it automatically; its presence means this is an ad-hoc, enterprise or development build.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">embedded.mobileprovision</div>
+<div class="snip mono">get-task-allow = true</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">Application exposes its Documents directory over file sharing</span>
+      <span class="summary-meta mono">IOS-FILE-SHARING</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M8 Security Misconfiguration</span>
+<span class="tag">CWE-552</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: ios_config</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>`UIFileSharingEnabled` is true together with `LSSupportsOpeningDocumentsInPlace`, so the app&#39;s Documents directory is visible in the Files app and over USB via iTunes/Finder. Anything the app writes there is readable, and replaceable, by anyone with access to the unlocked device — including files the app later reads back and trusts.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Disable file sharing unless the app&#39;s purpose is document exchange. Keep anything sensitive in Library/ or Application Support/ rather than Documents/, and re-validate any file read back from a user-writable location.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">Info.plist</div>
+<div class="snip mono">UIFileSharingEnabled = true</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/552.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/552.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Low">Low</span>
+      <span class="summary-title">Minimum iOS version 11.0 is well behind current releases</span>
+      <span class="summary-meta mono">IOS-LOW-MIN-OS</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M8 Security Misconfiguration</span>
+<span class="tag">CWE-1104</span><span class="tag">MASVS-PLATFORM</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: ios_config</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>`MinimumOSVersion` is 11.0. Devices on that release no longer receive security updates, and the app cannot rely on platform mitigations introduced since — so it must carry those protections itself.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Raise the deployment target if the install base allows. While supporting older releases, do not assume newer ATS, Keychain or privacy defaults are in effect.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">Info.plist</div>
+<div class="snip mono">MinimumOSVersion = 11.0</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <h3 style="margin-top:30px">M9 · Insecure Data Storage</h3>
+  <div class="sub" style="margin-bottom:8px">Sensitive data written to device storage without encryption or access control, readable by other apps, by backups, or by anyone with the unlocked device.</div>
+
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">Keychain items are readable while the device is locked</span>
+      <span class="summary-meta mono">STO-IOS-KEYCHAIN-ACCESSIBLE</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M9 Insecure Data Storage</span>
+<span class="tag">CWE-311</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: storage</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The binary references `kSecAttrAccessibleAlways`. These accessibility classes keep the item readable even while the device is locked, so the data is not protected by the user&#39;s passcode and is available to an attacker with the locked device in hand.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Use `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` for credentials, or `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` when a background task must reach the item.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">kSecAttrAccessibleAlways</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">Credential-shaped keys used with NSUserDefaults</span>
+      <span class="summary-meta mono">STO-IOS-USERDEFAULTS</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M9 Insecure Data Storage</span>
+<span class="tag">CWE-312</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: Low</span>
+        <span class="tag">analyzer: storage</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The binary references NSUserDefaults alongside key names that look like credentials: `@_kSecClassGenericPassword`, `DemoCredentialStore`, `_OBJC_CLASS_$_DemoCredentialStore`, `_OBJC_METACLASS_$_DemoCredentialStore`, `__OBJC_$_INSTANCE_METHODS_DemoCredentialStore`, `__OBJC_CLASS_RO_$_DemoCredentialStore`, `__OBJC_METACLASS_RO_$_DemoCredentialStore`, `_kSecClassGenericPassword`. NSUserDefaults is an unencrypted plist in the app container and is included in iTunes and iCloud backups, so anything stored there leaves the device with the backup.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Put credentials in the Keychain with an appropriate `kSecAttrAccessible` value (`…WhenUnlockedThisDeviceOnly` for anything that should not migrate to a new device), and keep NSUserDefaults for non-sensitive preferences.</div>
+
+      <div class="label">Evidence (10)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">NSUserDefaults key: @_kSecClassGenericPassword</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">NSUserDefaults key: DemoCredentialStore</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">NSUserDefaults key: _OBJC_CLASS_$_DemoCredentialStore</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">NSUserDefaults key: _OBJC_METACLASS_$_DemoCredentialStore</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">NSUserDefaults key: __OBJC_$_INSTANCE_METHODS_DemoCredentialStore</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">NSUserDefaults key: __OBJC_CLASS_RO_$_DemoCredentialStore</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">NSUserDefaults key: __OBJC_METACLASS_RO_$_DemoCredentialStore</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">NSUserDefaults key: _kSecClassGenericPassword</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">NSUserDefaults key: _objc_msgSend$persistToken:</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">NSUserDefaults key: auth_token</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <h3 style="margin-top:30px">M10 · Insufficient Cryptography</h3>
+  <div class="sub" style="margin-bottom:8px">Broken or misused cryptographic primitives that fail to provide the confidentiality or integrity the app relies on.</div>
+
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">Block cipher used in ECB mode</span>
+      <span class="summary-meta mono">CRY-ECB-MODE</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M10 Insufficient Cryptography</span>
+<span class="tag">CWE-327</span><span class="tag">MASVS-CRYPTO</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: crypto</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A cipher is configured for ECB mode. ECB encrypts identical plaintext blocks to identical ciphertext blocks, so structure in the data survives encryption. The classic demonstration is an encrypted bitmap in which the original image is still recognisable. ECB also provides no integrity, so an attacker can reorder or replay blocks.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Use GCM, which provides both confidentiality and integrity, with a unique nonce per encryption. If GCM is unavailable, use CBC with a random IV and authenticate the ciphertext with a separate HMAC key.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">AES/ECB/PKCS5Padding</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/327.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/327.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">Weak hash algorithm in use: SHA1</span>
+      <span class="summary-meta mono">CRY-WEAK-HASH-SHA1</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M10 Insufficient Cryptography</span>
+<span class="tag">CWE-328</span><span class="tag">MASVS-CRYPTO</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: crypto</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The package requests `SHA1`. SHA-1 collisions are practical (SHAttered, 2017). This matters wherever the hash is relied on for integrity or identity — signature verification, tamper checks, deduplication of security-relevant data. It is not a problem where the hash is only a non-security checksum or cache key, so confirm how it is used.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Use SHA-256 or SHA-3 for integrity and identity. For password storage no plain digest is appropriate — use Argon2id, scrypt or PBKDF2 with a per-user salt and a high iteration count.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">main binary (strings)</div>
+<div class="snip mono">SHA-1</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/328.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/328.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+
+<h2>Scan coverage and limitations</h2>
+<div class="scroll">
+<table class="kv">
+  <tr><td>Files extracted</td><td>5</td></tr>
+  <tr><td>Bytes extracted</td><td>71,574</td></tr>
+  <tr><td>Strings analysed</td><td>197</td></tr>
+  <tr><td>Duration</td><td>0.01s</td></tr>
+</table>
+</div>
+
+
+
+<div class="label">How the risk score is calculated</div>
+<div class="sub">Each finding contributes its severity weight (Critical 10, High 7, Medium 4, Low 1.5, Info 0) multiplied by a confidence factor (High 1.0, Medium 0.7, Low 0.4). A single rule contributes at most three times its unit weight, so one noisy rule cannot dominate. The total is mapped to 0-100 through 100 x (1 - e^(-total/30)), which saturates: the score is a communication device for ordering and triage, not a measurement of real-world risk.
+</div>
+
+<div class="label">What this analysis does not cover</div>
+<div class="sub">
+  This is static analysis only: the package was decompiled and pattern-matched, never
+  executed. It cannot observe runtime behaviour, actual network traffic, server-side
+  controls, or logic that is assembled dynamically or loaded after install. Native
+  libraries, obfuscated code and reflective calls limit what static rules can see.
+  Absence of a finding is not evidence of absence of a vulnerability.
+</div>
+
+<footer>
+  Generated by mobile-app-security-analyzer 1.0.0 ·
+  2026-09-07 00:04:09 UTC · all analysis performed locally; no package contents were transmitted.
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security report — vulnerable-demo.apk</title>
+<style>
+  :root {
+    --ink: #14181d; --muted: #5b6672; --faint: #8a949e;
+    --rule: #e2e6ea; --bg: #ffffff; --panel: #f7f8fa; --panel-2: #eef1f4;
+    --critical: #a4133c; --high: #c1440e; --medium: #9a6700; --low: #2b6cb0; --info: #5b6672;
+    --accent: #1f3a5f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 28px 80px; }
+  header.masthead { border-bottom: 3px solid var(--ink); padding-bottom: 20px; margin-bottom: 28px; }
+  .eyebrow { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  h1 { font-size: 27px; margin: 8px 0 4px; letter-spacing: -.01em; }
+  h2 { font-size: 19px; margin: 40px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--rule); letter-spacing: -.01em; }
+  h3 { font-size: 15px; margin: 0; }
+  .sub { color: var(--muted); font-size: 13.5px; }
+  code, .mono { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; }
+
+  .notice { background: #fff8e6; border: 1px solid #f0d9a0; border-left: 4px solid #d99b00;
+            padding: 14px 16px; border-radius: 4px; margin: 22px 0; font-size: 13.5px; }
+  .notice strong { display: block; margin-bottom: 4px; }
+
+  .scorecard { display: grid; grid-template-columns: 168px 1fr; gap: 26px; align-items: center;
+               background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 22px 24px; }
+  .grade { text-align: center; }
+  .grade .letter { font-size: 62px; font-weight: 700; line-height: 1; letter-spacing: -.03em; }
+  .grade .score { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .grade-A .letter { color: #216e39; } .grade-B .letter { color: #3f7a3f; }
+  .grade-C .letter { color: var(--medium); } .grade-D .letter { color: var(--high); }
+  .grade-F .letter { color: var(--critical); }
+
+  .sevgrid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .sevpill { border: 1px solid var(--rule); background: #fff; border-radius: 999px;
+             padding: 5px 13px; font-size: 12.5px; font-weight: 600; }
+  .sevpill .n { font-weight: 700; }
+  .sev-Critical { color: var(--critical); border-color: #f0c4d0; }
+  .sev-High { color: var(--high); border-color: #f2cfbb; }
+  .sev-Medium { color: var(--medium); border-color: #ecdca6; }
+  .sev-Low { color: var(--low); border-color: #c3d9ee; }
+  .sev-Info { color: var(--info); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-size: 11px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .kv td:first-child { color: var(--muted); width: 210px; white-space: nowrap; }
+  .kv td:last-child { overflow-wrap: anywhere; }
+  .scroll { overflow-x: auto; }
+
+  .owasp-row td:first-child { font-weight: 700; width: 54px; }
+  .count-0 { color: var(--faint); }
+  .count-hit { font-weight: 700; }
+
+  .finding { border: 1px solid var(--rule); border-radius: 8px; margin: 14px 0; overflow: hidden; }
+  .finding > summary { padding: 13px 16px; cursor: pointer; display: flex; gap: 12px;
+                       align-items: baseline; background: var(--panel); list-style: none; }
+  .finding > summary::-webkit-details-marker { display: none; }
+  .finding > summary::before { content: "▸"; color: var(--faint); font-size: 11px; }
+  .finding[open] > summary::before { content: "▾"; }
+  .finding[open] > summary { border-bottom: 1px solid var(--rule); }
+  .badge { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+           padding: 3px 8px; border-radius: 3px; color: #fff; white-space: nowrap; }
+  .badge.sev-Critical { background: var(--critical); } .badge.sev-High { background: var(--high); }
+  .badge.sev-Medium { background: var(--medium); } .badge.sev-Low { background: var(--low); }
+  .badge.sev-Info { background: var(--info); }
+  .summary-title { flex: 1; font-weight: 600; }
+  .summary-meta { color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .body { padding: 16px 18px 18px; }
+  .label { font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase;
+           color: var(--muted); font-weight: 700; margin: 16px 0 5px; }
+  .body > .label:first-child { margin-top: 0; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+  .tag { font-size: 11.5px; background: var(--panel-2); border-radius: 3px; padding: 2px 8px; color: var(--muted); }
+  .evidence { background: #fbfcfd; border: 1px solid var(--rule); border-radius: 5px;
+              padding: 4px 0; }
+  .ev-item { padding: 7px 12px; border-bottom: 1px solid #eef1f4; }
+  .ev-item:last-child { border-bottom: none; }
+  .loc { color: var(--accent); font-weight: 600; overflow-wrap: anywhere; }
+  .snip { color: #33404d; overflow-wrap: anywhere; margin-top: 2px; }
+  .snip::before { content: "› "; color: var(--faint); }
+  ul.refs { margin: 4px 0 0; padding-left: 18px; font-size: 13px; }
+  ul.refs a { color: var(--accent); }
+  .empty { color: var(--muted); font-style: italic; padding: 12px 0; }
+  footer { margin-top: 52px; padding-top: 18px; border-top: 1px solid var(--rule);
+           color: var(--faint); font-size: 12px; }
+  @media print {
+    .finding { break-inside: avoid; }
+    .finding > summary::before { content: ""; }
+    details { display: block; }
+    details > .body { display: block !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">Mobile Application Security Assessment</div>
+  <h1>vulnerable-demo.apk</h1>
+  <div class="sub">
+    com.masa.vulnerable
+ · version 1.3.7    · android · generated 2026-09-07 00:04:09 UTC
+  </div>
+</header>
+
+<div class="notice">
+  <strong>Authorised use only</strong>
+  This report was produced by static analysis of a package supplied to the tool. Analyse
+  only applications you own or have explicit written authorisation to test — unauthorised
+  analysis of third-party applications may breach their terms of service or the law in your
+  jurisdiction. Findings are produced by pattern matching over decompiled code and require
+  human confirmation; the tool never executed any code from the package.
+</div>
+
+<div class="scorecard">
+  <div class="grade grade-F">
+    <div class="letter">F</div>
+    <div class="score">100 / 100 risk</div>
+  </div>
+  <div>
+    <div class="sevgrid">
+      <span class="sevpill sev-Critical"><span class="n">10</span> Critical</span>
+      <span class="sevpill sev-High"><span class="n">19</span> High</span>
+      <span class="sevpill sev-Medium"><span class="n">14</span> Medium</span>
+      <span class="sevpill sev-Low"><span class="n">4</span> Low</span>
+      <span class="sevpill sev-Info"><span class="n">0</span> Info</span>
+    </div>
+    <div class="sub">
+      Critical issues; do not ship in this state. 47 finding(s) across
+      9 of 10 OWASP Mobile Top 10 categories.
+      Scanned 8 files and 270 strings
+      in 0.01s.
+    </div>
+  </div>
+</div>
+
+<h2>Application</h2>
+<div class="scroll">
+<table class="kv">
+  <tr><td>File</td><td class="mono">vulnerable-demo.apk (16,949 bytes)</td></tr>
+  <tr><td>SHA-256</td><td class="mono">6d2e1625d6055de107569f0765b54ae42cd30dc2bd7c1fa15fd0f73f6a42aa71</td></tr>
+  <tr><td>Package / bundle ID</td><td class="mono">com.masa.vulnerable</td></tr>
+  <tr><td>Version</td><td>1.3.7 (build 42)</td></tr>
+  <tr><td>SDK</td><td>min 21 · target 34</td></tr>
+  <tr><td>Permissions requested</td><td>
+<span class="mono">android.permission.ACCESS_FINE_LOCATION, android.permission.INTERNET, android.permission.READ_CONTACTS, android.permission.READ_EXTERNAL_STORAGE, android.permission.READ_PHONE_STATE, android.permission.READ_SMS, android.permission.RECORD_AUDIO, android.permission.REQUEST_INSTALL_PACKAGES, android.permission.WRITE_EXTERNAL_STORAGE</span>  </td></tr>
+  <tr><td>Components</td><td>
+      activity: 3
+      (3 exported) ·       service: 1
+      (1 exported) ·       receiver: 1
+      (1 exported) ·       provider: 2
+      (2 exported)  </td></tr>
+  <tr><td>Signing</td><td>
+v1 (JAR signing), v2 (APK Signature Scheme v2), v3 (APK Signature Scheme v3), v4 (APK Signature Scheme v4, from sibling .idsig)      <div class="mono sub">MASA Test Fixture · sha256WithRSA
+</div>
+  </td></tr>
+  <tr><td>Decompilers used</td><td>built-in (pure Python)</td></tr>
+</table>
+</div>
+
+<h2>OWASP Mobile Top 10 (2024) coverage</h2>
+<div class="scroll">
+<table>
+  <thead><tr><th>ID</th><th>Risk</th><th>Findings</th></tr></thead>
+  <tbody>
+    <tr class="owasp-row">
+      <td>M1</td>
+      <td>Improper Credential Usage</td>
+      <td class="count-hit">
+        10
+      </td>
+    </tr>
+    <tr class="owasp-row">
+      <td>M2</td>
+      <td>Inadequate Supply Chain Security</td>
+      <td class="count-0">
+        0
+      </td>
+    </tr>
+    <tr class="owasp-row">
+      <td>M3</td>
+      <td>Insecure Authentication/Authorization</td>
+      <td class="count-hit">
+        4
+      </td>
+    </tr>
+    <tr class="owasp-row">
+      <td>M4</td>
+      <td>Insufficient Input/Output Validation</td>
+      <td class="count-hit">
+        6
+      </td>
+    </tr>
+    <tr class="owasp-row">
+      <td>M5</td>
+      <td>Insecure Communication</td>
+      <td class="count-hit">
+        6
+      </td>
+    </tr>
+    <tr class="owasp-row">
+      <td>M6</td>
+      <td>Inadequate Privacy Controls</td>
+      <td class="count-hit">
+        2
+      </td>
+    </tr>
+    <tr class="owasp-row">
+      <td>M7</td>
+      <td>Insufficient Binary Protections</td>
+      <td class="count-hit">
+        3
+      </td>
+    </tr>
+    <tr class="owasp-row">
+      <td>M8</td>
+      <td>Security Misconfiguration</td>
+      <td class="count-hit">
+        3
+      </td>
+    </tr>
+    <tr class="owasp-row">
+      <td>M9</td>
+      <td>Insecure Data Storage</td>
+      <td class="count-hit">
+        5
+      </td>
+    </tr>
+    <tr class="owasp-row">
+      <td>M10</td>
+      <td>Insufficient Cryptography</td>
+      <td class="count-hit">
+        8
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Findings</h2>
+
+  <h3 style="margin-top:30px">M1 · Improper Credential Usage</h3>
+  <div class="sub" style="margin-bottom:8px">Hardcoded credentials, or credentials transmitted/stored insecurely, let an attacker who reads the package authenticate as the app or its users.</div>
+
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-Critical">Critical</span>
+      <span class="summary-title">AWS access key ID hardcoded in the package (AKIA************VC)</span>
+      <span class="summary-meta mono">SEC-AWS-AKID</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-798</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A value matching the AWS access key ID pattern is embedded in the shipped package and was found in 2 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access. AWS access key IDs are paired with a secret key; both are usually shipped together.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.</div>
+
+      <div class="label">Evidence (2)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.AWS_ACCESS_KEY [MainActivity.java]</div>
+<div class="snip mono">AKIA************VC</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]</div>
+<div class="snip mono">aws key AKIA************VC secret wJal************LE</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage" rel="noreferrer noopener nofollow">https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage</a>
+        </li>
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/798.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/798.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-Critical">Critical</span>
+      <span class="summary-title">AWS secret access key hardcoded in the package (wJal************EY)</span>
+      <span class="summary-meta mono">SEC-AWS-SECRET</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-798</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A value matching the AWS secret access key pattern is embedded in the shipped package and was found in 1 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">assets/config.properties:3</div>
+<div class="snip mono">aws_secret_access_key=wJal************EY</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage" rel="noreferrer noopener nofollow">https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage</a>
+        </li>
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/798.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/798.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-Critical">Critical</span>
+      <span class="summary-title">GitHub token hardcoded in the package (ghp_************Yz)</span>
+      <span class="summary-meta mono">SEC-GITHUB-PAT</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-798</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A value matching the GitHub token pattern is embedded in the shipped package and was found in 2 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.</div>
+
+      <div class="label">Evidence (2)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.GITHUB_TOKEN [MainActivity.java]</div>
+<div class="snip mono">ghp_************Yz</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]</div>
+<div class="snip mono">github ghp_************Yz stripe sk_l************TU blob Zq7X2pLm9Rt4Wv8Ky3Nc6Bd1Hj5Fg0Sa</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage" rel="noreferrer noopener nofollow">https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage</a>
+        </li>
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/798.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/798.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-Critical">Critical</span>
+      <span class="summary-title">Private key material hardcoded in the package (----************--)</span>
+      <span class="summary-meta mono">SEC-PRIVATE-KEY</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-321</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A value matching the Private key material pattern is embedded in the shipped package and was found in 1 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access. A private key inside the package is available to every user of the app.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">assets/signing_key.pem:1</div>
+<div class="snip mono">----************--</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage" rel="noreferrer noopener nofollow">https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage</a>
+        </li>
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/798.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/798.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-Critical">Critical</span>
+      <span class="summary-title">Stripe secret key hardcoded in the package (sk_l************TU)</span>
+      <span class="summary-meta mono">SEC-STRIPE</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-798</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A value matching the Stripe secret key pattern is embedded in the shipped package and was found in 3 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.</div>
+
+      <div class="label">Evidence (3)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]</div>
+<div class="snip mono">github ghp_************Yz stripe sk_l************TU blob Zq7X2pLm9Rt4Wv8Ky3Nc6Bd1Hj5Fg0Sa</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.STRIPE_KEY [MainActivity.java]</div>
+<div class="snip mono">sk_l************TU</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">assets/config.properties:4</div>
+<div class="snip mono">stripe_secret=sk_l************TU</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage" rel="noreferrer noopener nofollow">https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage</a>
+        </li>
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/798.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/798.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">Google API key hardcoded in the package (AIza************cV)</span>
+      <span class="summary-meta mono">SEC-GCP-APIKEY</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-798</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A value matching the Google API key pattern is embedded in the shipped package and was found in 2 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access. Unrestricted Google API keys can be billed against by anyone who extracts them.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.</div>
+
+      <div class="label">Evidence (2)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">res/values/strings.xml:google_api_key</div>
+<div class="snip mono">AIza************cV</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">resources.arsc (value pool)</div>
+<div class="snip mono">AIza************cV</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage" rel="noreferrer noopener nofollow">https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage</a>
+        </li>
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/798.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/798.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">JSON Web Token hardcoded in the package (eyJh************8U)</span>
+      <span class="summary-meta mono">SEC-JWT</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-522</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A value matching the JSON Web Token pattern is embedded in the shipped package and was found in 2 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access. A shipped JWT is a bearer credential; anyone holding it is that user until it expires.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.</div>
+
+      <div class="label">Evidence (2)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]</div>
+<div class="snip mono">eyJh************8U</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]</div>
+<div class="snip mono">session token=eyJh************8U</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage" rel="noreferrer noopener nofollow">https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage</a>
+        </li>
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/798.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/798.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">Resource `db_password` holds what its name says is a credential</span>
+      <span class="summary-meta mono">SEC-NAMED-RESOURCE</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-798</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The resource `db_password` at `res/values/strings.xml:db_password` contains a 28-character value. The name declares this is a credential, and resource values are trivially readable — `aapt dump` or any APK viewer prints them without decompiling anything. String resources are a common place for keys to end up because they feel like configuration rather than code.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Rotate this credential and remove it from the package. Resource files, BuildConfig fields and Gradle properties all end up inside the shipped artifact — none of them is a secret store. Fetch the value from your backend at runtime instead.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">res/values/strings.xml:db_password</div>
+<div class="snip mono">Pr0d************ip</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">Slack token hardcoded in the package (xoxb************Mn)</span>
+      <span class="summary-meta mono">SEC-SLACK-TOKEN</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-798</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A value matching the Slack token pattern is embedded in the shipped package and was found in 2 location(s). Anything inside an APK or IPA is readable by anyone who downloads it — unpacking one takes seconds and no privileged access.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Treat this credential as compromised and rotate it now. Move the secret server-side and have the app request short-lived, scoped tokens at runtime; if a key must reach the device, restrict it by package name and signing certificate and give it the minimum scope it needs.</div>
+
+      <div class="label">Evidence (2)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">res/values/strings.xml:slack_webhook_token</div>
+<div class="snip mono">xoxb************Mn</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">resources.arsc (value pool)</div>
+<div class="snip mono">xoxb************Mn</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage" rel="noreferrer noopener nofollow">https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage</a>
+        </li>
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/798.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/798.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">High-entropy string may be an embedded secret</span>
+      <span class="summary-meta mono">SEC-ENTROPY</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M1 Improper Credential Usage</span>
+<span class="tag">CWE-798</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: Low</span>
+        <span class="tag">analyzer: secrets</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A 32-character string with 5.00 bits of entropy per character was found in the package. That is the statistical profile of a key or token rather than of ordinary program text, though it matches no known credential format — it could equally be a hash, a nonce or an encoded asset. Confirm manually.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Check what this value is. If it is a credential, rotate it and move it out of the package; if it is benign, no action is needed.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.HIGH_ENTROPY_BLOB [MainActivity.java]</div>
+<div class="snip mono">Zq7X************Sa</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <h3 style="margin-top:30px">M3 · Insecure Authentication/Authorization</h3>
+  <div class="sub" style="margin-bottom:8px">Weak identification of the user or of the caller of an app component, letting an attacker reach functionality they should not.</div>
+
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">Exported activity with no permission check (2)</span>
+      <span class="summary-meta mono">MAN-EXPORTED-ACTIVITY</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M3 Insecure Authentication/Authorization</span>
+<span class="tag">CWE-926</span><span class="tag">MASVS-PLATFORM</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: manifest</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>2 activity component(s) are exported without an `android:permission` attribute. Any other app installed on the device — including one the user installed by accident — can start them directly and supply arbitrary Intent extras. If the component performs a privileged action, or trusts data from the Intent, that is a way in that bypasses the app&#39;s own UI and whatever authentication it does.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Set `android:exported=&#34;false&#34;` on anything that does not need to be reachable from other apps. Where it must stay exported, guard it with a signature-level `android:permission` and validate every value read from the incoming Intent.</div>
+
+      <div class="label">Evidence (2)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">AndroidManifest.xml:32</div>
+<div class="snip mono">&lt;activity android:name=&#34;.DeepLinkActivity&#34; android:exported=&#34;true&#34;&gt; with no android:permission</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">AndroidManifest.xml:41</div>
+<div class="snip mono">&lt;activity android:name=&#34;.AdminActivity&#34; android:exported=&#34;true&#34;&gt; with no android:permission</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/926.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/926.html</a>
+        </li>
+        <li>
+          <a href="https://developer.android.com/guide/topics/manifest/activity-element#exported" rel="noreferrer noopener nofollow">https://developer.android.com/guide/topics/manifest/activity-element#exported</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">Content provider is exported without a permission</span>
+      <span class="summary-meta mono">MAN-EXPORTED-PROVIDER</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M3 Insecure Authentication/Authorization</span>
+<span class="tag">CWE-926</span><span class="tag">MASVS-PLATFORM</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: manifest</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The content provider `.LeakyProvider` (authority `com.masa.vulnerable.provider`) is exported and no read or write permission guards it. Any app on the device can query, insert into and delete from whatever it exposes. Providers usually sit directly on top of the app&#39;s database, so this is often equivalent to handing out the app&#39;s stored data.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Set `android:exported=&#34;false&#34;` unless other apps genuinely need this data. If they do, declare `android:readPermission` and `android:writePermission`, and make the provider&#39;s own query handling parameterise every selection argument.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">AndroidManifest.xml:51</div>
+<div class="snip mono">&lt;provider android:name=&#34;.LeakyProvider&#34; android:authorities=&#34;com.masa.vulnerable.provider&#34; android:exported=&#34;true&#34;&gt;</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">Exported service with no permission check (1)</span>
+      <span class="summary-meta mono">MAN-EXPORTED-SERVICE</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M3 Insecure Authentication/Authorization</span>
+<span class="tag">CWE-926</span><span class="tag">MASVS-PLATFORM</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: manifest</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>1 service component(s) are exported without an `android:permission` attribute. Any other app installed on the device — including one the user installed by accident — can start them directly and supply arbitrary Intent extras. If the component performs a privileged action, or trusts data from the Intent, that is a way in that bypasses the app&#39;s own UI and whatever authentication it does.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Set `android:exported=&#34;false&#34;` on anything that does not need to be reachable from other apps. Where it must stay exported, guard it with a signature-level `android:permission` and validate every value read from the incoming Intent.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">AndroidManifest.xml:43</div>
+<div class="snip mono">&lt;service android:name=&#34;.ExportedService&#34; android:exported=&#34;true&#34;&gt; with no android:permission</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/926.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/926.html</a>
+        </li>
+        <li>
+          <a href="https://developer.android.com/guide/topics/manifest/activity-element#exported" rel="noreferrer noopener nofollow">https://developer.android.com/guide/topics/manifest/activity-element#exported</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">Exported provider grants URI permissions</span>
+      <span class="summary-meta mono">MAN-PROVIDER-GRANT-URI</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M3 Insecure Authentication/Authorization</span>
+<span class="tag">CWE-926</span><span class="tag">MASVS-PLATFORM</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: manifest</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>`.LeakyProvider` sets `android:grantUriPermissions=&#34;true&#34;` while exported and unguarded. Temporary URI grants let a caller hand access to a specific record on to a third app, widening the reach of any data the provider exposes.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Restrict grants with `&lt;grant-uri-permission android:path…&gt;` elements rather than allowing them across the whole provider.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">AndroidManifest.xml:51</div>
+<div class="snip mono">.LeakyProvider: android:grantUriPermissions=&#34;true&#34;</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <h3 style="margin-top:30px">M4 · Insufficient Input/Output Validation</h3>
+  <div class="sub" style="margin-bottom:8px">Data from intents, URL schemes, WebViews or remote responses is trusted without validation, opening injection and code-execution surfaces.</div>
+
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-Critical">Critical</span>
+      <span class="summary-title">WebView enables file:// pages reading any origin</span>
+      <span class="summary-meta mono">WEB-UNIVERSAL-ACCESS-FROM-FILE-URLS</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M4 Insufficient Input/Output Validation</span>
+<span class="tag">CWE-749</span><span class="tag">MASVS-PLATFORM</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: webview</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>`setAllowUniversalAccessFromFileURLs(true)` is called on a WebView&#39;s settings. A page loaded from file:// can issue requests to any origin and read the responses, bypassing the same-origin policy entirely. Combined with any path an attacker can write to, this reads the app&#39;s private files and exfiltrates them.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Call `setAllowUniversalAccessFromFileURLs(false)` unless a shipped feature depends on it. These settings default to permissive values on older API levels, so set them explicitly rather than relying on the default.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.WebViewActivity.onCreate() [WebViewActivity.java]</div>
+<div class="snip mono">setAllowUniversalAccessFromFileURLs(true)</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">WebView enables file:// pages reading other files</span>
+      <span class="summary-meta mono">WEB-FILE-ACCESS-FROM-FILE-URLS</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M4 Insufficient Input/Output Validation</span>
+<span class="tag">CWE-749</span><span class="tag">MASVS-PLATFORM</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: webview</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>`setAllowFileAccessFromFileURLs(true)` is called on a WebView&#39;s settings. A page loaded from a file:// URL can read other files through XHR.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Call `setAllowFileAccessFromFileURLs(false)` unless a shipped feature depends on it. These settings default to permissive values on older API levels, so set them explicitly rather than relying on the default.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.WebViewActivity.onCreate() [WebViewActivity.java]</div>
+<div class="snip mono">setAllowFileAccessFromFileURLs(true)</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">WebView exposes a Java object to page JavaScript</span>
+      <span class="summary-meta mono">WEB-JS-INTERFACE</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M4 Insufficient Input/Output Validation</span>
+<span class="tag">CWE-749</span><span class="tag">MASVS-PLATFORM</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: webview</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>`addJavascriptInterface` binds a Java object into the WebView&#39;s JavaScript context. Whatever HTML the WebView ends up displaying — including a page reached through a redirect, an injected iframe, or an ad network — can call the annotated methods on that object with arguments of its choosing. On API 17+ only @JavascriptInterface-annotated methods are exposed, so the risk is bounded by what those methods do — but each one is an entry point callable by untrusted page content.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Remove the bridge if the page content does not need it. If it does: load only content you control over HTTPS, keep the bridge object as small as possible, validate every argument, and never expose methods that touch the filesystem, credentials or other components. Prefer `WebMessagePort` for structured, origin-checked messaging.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.WebViewActivity.onCreate() [WebViewActivity.java]</div>
+<div class="snip mono">addJavascriptInterface(…)</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/749.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/749.html</a>
+        </li>
+        <li>
+          <a href="https://developer.android.com/reference/android/webkit/WebView#addJavascriptInterface(java.lang.Object,%20java.lang.String)" rel="noreferrer noopener nofollow">https://developer.android.com/reference/android/webkit/WebView#addJavascriptInterface(java.lang.Object,%20java.lang.String)</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">WebView loads a URL taken from an incoming Intent</span>
+      <span class="summary-meta mono">WEB-LOADURL-FROM-INTENT</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M4 Insufficient Input/Output Validation</span>
+<span class="tag">CWE-939</span><span class="tag">MASVS-PLATFORM</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: webview</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The same method both reads a value out of an Intent and calls `WebView.loadUrl`. If the URL is not validated, any app on the device — or any web page, when the activity is reachable through a browsable deep link — can choose what this WebView loads. That turns the app into an open redirect, and combines with any JavaScript bridge to reach the bridge from attacker-controlled content. This rule matches methods, not data flow, so confirm the value really reaches loadUrl.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Validate before loading: parse the URL, require the https scheme, and check the host against an allowlist of domains you control. Reject anything else rather than falling back to loading it.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.WebViewActivity.onCreate() [WebViewActivity.java]</div>
+<div class="snip mono">Intent data reaches loadUrl(…)</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/939.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/939.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">WebView enables file:// URL loading</span>
+      <span class="summary-meta mono">WEB-ALLOW-FILE-ACCESS</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M4 Insufficient Input/Output Validation</span>
+<span class="tag">CWE-749</span><span class="tag">MASVS-PLATFORM</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: webview</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>`setAllowFileAccess(true)` is called on a WebView&#39;s settings. The WebView may load file:// URLs, which widens what a redirect or an injected URL can reach.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Call `setAllowFileAccess(false)` unless a shipped feature depends on it. These settings default to permissive values on older API levels, so set them explicitly rather than relying on the default.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.WebViewActivity.onCreate() [WebViewActivity.java]</div>
+<div class="snip mono">setAllowFileAccess(true)</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">Custom URL scheme is reachable from the browser</span>
+      <span class="summary-meta mono">WEB-CUSTOM-URL-SCHEME</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M4 Insufficient Input/Output Validation</span>
+<span class="tag">CWE-939</span><span class="tag">MASVS-PLATFORM</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: webview</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The app registers a custom URL scheme with the BROWSABLE category, so any web page the user visits can launch this component and control the Intent data it receives. Unlike verified App Links, custom schemes are not tied to a domain you own: another app can register the same scheme, and the platform gives no guarantee about who handles the URL or where it came from.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Treat everything in the incoming URI as untrusted input — validate and canonicalise every parameter before use, and never let it select a file path, a class to instantiate, or a URL to load. For links that must be trustworthy, use verified Android App Links (or Universal Links on iOS) bound to a domain you control.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">AndroidManifest.xml:33</div>
+<div class="snip mono">.DeepLinkActivity: custom scheme &#34;vulnapp://open&#34; is BROWSABLE</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/939.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/939.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <h3 style="margin-top:30px">M5 · Insecure Communication</h3>
+  <div class="sub" style="margin-bottom:8px">Traffic that is unencrypted, or encrypted with validation disabled, can be read or modified by anyone on the network path.</div>
+
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-Critical">Critical</span>
+      <span class="summary-title">Hostname verification is disabled</span>
+      <span class="summary-meta mono">NET-HOSTNAME-VERIFIER</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M5 Insecure Communication</span>
+<span class="tag">CWE-297</span><span class="tag">MASVS-NETWORK</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: network</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A `HostnameVerifier` returns true for every hostname. Certificate chain validation may still pass, but nothing checks that the certificate was issued for the host actually being contacted — so any valid certificate for any domain is accepted, and an attacker needs only a legitimately-issued certificate for a domain they own.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Remove the custom verifier and let the default implementation run. For a host whose certificate does not match its name, fix the certificate rather than the client.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.NetworkHelper$1.verify()</div>
+<div class="snip mono">verify() unconditionally returns true</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/297.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/297.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-Critical">Critical</span>
+      <span class="summary-title">TrustManager accepts every certificate</span>
+      <span class="summary-meta mono">NET-TRUSTMANAGER-ALLOW-ALL</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M5 Insecure Communication</span>
+<span class="tag">CWE-295</span><span class="tag">MASVS-NETWORK</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: network</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A class implementing `X509TrustManager` has an empty `checkServerTrusted`. An empty implementation raises no exception, which is how the API says &#34;this certificate is valid&#34; — so the app accepts any certificate from any server, including a self-signed one an attacker generates. TLS still encrypts the connection, but to whoever intercepted it: the confidentiality and authentication guarantees are both gone, silently.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Delete the custom TrustManager and use the platform default. If a private CA must be trusted, add it as a trust anchor in the network security config instead of writing validation code. Never ship the permissive version that was added to make a staging certificate work.</div>
+
+      <div class="label">Evidence (2)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.NetworkHelper$TrustEverything.checkClientTrusted()</div>
+<div class="snip mono">checkClientTrusted has an empty body — accepts any certificate</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.NetworkHelper$TrustEverything.checkServerTrusted()</div>
+<div class="snip mono">checkServerTrusted has an empty body — accepts any certificate</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/295.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/295.html</a>
+        </li>
+        <li>
+          <a href="https://developer.android.com/privacy-and-security/security-ssl" rel="noreferrer noopener nofollow">https://developer.android.com/privacy-and-security/security-ssl</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">Cleartext HTTP traffic is explicitly permitted</span>
+      <span class="summary-meta mono">NET-CLEARTEXT-FLAG</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M5 Insecure Communication</span>
+<span class="tag">CWE-319</span><span class="tag">MASVS-NETWORK</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: network</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>`android:usesCleartextTraffic=&#34;true&#34;` is set, which re-enables unencrypted HTTP for the whole app. Android blocks cleartext by default from API 28 precisely because anyone sharing the network — a coffee-shop access point, a hostile ISP, someone with an ARP-spoofing tool — can read and rewrite that traffic in transit.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Remove the attribute and serve every endpoint over HTTPS. If one legacy host genuinely cannot be migrated yet, allow just that domain in a network security config (`&lt;domain-config cleartextTrafficPermitted=&#34;true&#34;&gt;`) rather than opening the whole app.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">AndroidManifest.xml:19</div>
+<div class="snip mono">android:usesCleartextTraffic=&#34;true&#34;</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/319.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/319.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">Cleartext HTTP endpoints referenced (3 host(s))</span>
+      <span class="summary-meta mono">NET-HTTP-URL</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M5 Insecure Communication</span>
+<span class="tag">CWE-319</span><span class="tag">MASVS-NETWORK</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: network</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The package contains `http://` URLs pointing at `api.insecure-demo.example.com`, `config.insecure-demo.example.com`, `telemetry.insecure-demo.example.com`. Traffic to these hosts is unencrypted and unauthenticated: it can be read and modified by anything on the network path. A URL in a string pool is not proof the app requests it at runtime — check the call sites — but each one is a candidate for interception.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Move every endpoint to HTTPS. For URLs that are documentation links or namespace identifiers rather than requests, no change is needed beyond confirming that is what they are.</div>
+
+      <div class="label">Evidence (3)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.NetworkHelper.fetch() [NetworkHelper.java]</div>
+<div class="snip mono">http://api.insecure-demo.example.com/v1/login</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.NetworkHelper.fetch() [NetworkHelper.java]</div>
+<div class="snip mono">http://telemetry.insecure-demo.example.com/collect</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">assets/config.properties:5</div>
+<div class="snip mono">http://config.insecure-demo.example.com/settings</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/319.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/319.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">No network security configuration is declared</span>
+      <span class="summary-meta mono">NET-NO-NSC</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M5 Insecure Communication</span>
+<span class="tag">CWE-295</span><span class="tag">MASVS-NETWORK</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: network</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The app declares no `android:networkSecurityConfig`, and its minSdkVersion (21) is below 28. On those platform versions cleartext HTTP is allowed by default and — below API 24 — the app also trusts CAs the user has installed, which is exactly what makes traffic interception with a proxy certificate straightforward.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Add a network security config that sets `cleartextTrafficPermitted=&#34;false&#34;` and restricts trust anchors to the system store, then reference it from &lt;application&gt;.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">AndroidManifest.xml</div>
+<div class="snip mono">no android:networkSecurityConfig attribute</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Low">Low</span>
+      <span class="summary-title">No certificate pinning was found</span>
+      <span class="summary-meta mono">NET-NO-PINNING</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M5 Insecure Communication</span>
+<span class="tag">CWE-295</span><span class="tag">MASVS-NETWORK</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: network</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>No certificate or public-key pinning implementation was found (no OkHttp CertificatePinner, TrustKit, or `&lt;pin-set&gt;` in a network security config). Without pinning, the app trusts every CA in the system store, so a mis-issued or compromised CA certificate — or a CA an attacker can coerce — is enough to intercept traffic. Reported as an absent hardening measure, not a defect: pinning carries real operational risk if certificate rotation is not automated, and is not appropriate for every app.</div>
+
+      <div class="label">How to fix it</div>
+      <div>For an app handling authentication or financial data, pin to the public key (not the leaf certificate) of your own backends, include a backup pin, and make sure the rotation process is tested before shipping — a pin that expires bricks the app in the field.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">vulnerable-demo.apk</div>
+<div class="snip mono">no pinning implementation found in the package</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <h3 style="margin-top:30px">M6 · Inadequate Privacy Controls</h3>
+  <div class="sub" style="margin-bottom:8px">Personal data is collected, logged or shared more broadly than the app&#39;s function requires, or than the user was told.</div>
+
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">Credentials or personal data are written to the system log</span>
+      <span class="summary-meta mono">PRI-SENSITIVE-LOGGING</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M6 Inadequate Privacy Controls</span>
+<span class="tag">CWE-532</span><span class="tag">MASVS-PRIVACY</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: privacy</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>2 method(s) call `android.util.Log` and, in the same method, load strings referring to passwords, tokens or personal identifiers. Log output is written to the device log buffer, is captured by bug reports and crash reporters, and is readable by anyone with ADB access or a debuggable build. A credential that reaches the log has left the app&#39;s control.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Remove these log statements. Where the log line is genuinely useful, log a non-identifying reference instead of the value — an event name or a hashed identifier — and strip debug logging from release builds with a ProGuard `assumenosideeffects` rule.</div>
+
+      <div class="label">Evidence (6)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.AdminActivity.onCreate() [Components.java]</div>
+<div class="snip mono">admin panel opened with token eyJh************ig</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]</div>
+<div class="snip mono">aws key AKIA************VC secret wJal************LE</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]</div>
+<div class="snip mono">hunt************in</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]</div>
+<div class="snip mono">password</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]</div>
+<div class="snip mono">session token=eyJh************8U</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]</div>
+<div class="snip mono">user password is hunt************in</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/532.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/532.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">Application requests 6 high-risk permissions</span>
+      <span class="summary-meta mono">MAN-SENSITIVE-PERMISSIONS</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M6 Inadequate Privacy Controls</span>
+<span class="tag">CWE-250</span><span class="tag">MASVS-PRIVACY</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: manifest</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The app requests permissions that give it access to personal data or powerful device capabilities: `android.permission.ACCESS_FINE_LOCATION` — track the user&#39;s precise location; `android.permission.READ_CONTACTS` — read the user&#39;s address book; `android.permission.READ_PHONE_STATE` — read device and SIM identifiers; `android.permission.READ_SMS` — read the user&#39;s text messages; `android.permission.RECORD_AUDIO` — record from the microphone; `android.permission.REQUEST_INSTALL_PACKAGES` — install other applications. Each is legitimate for some apps. Reported so the set can be checked against what the app actually does: a permission the feature set does not justify is both a privacy problem and extra attack surface if the app is compromised.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Drop any permission not tied to a shipped feature. For the rest, request at the point of use rather than at launch, prefer the narrower variant where one exists (coarse over fine location, READ_MEDIA_* over broad storage), and make sure the privacy policy and store listing match.</div>
+
+      <div class="label">Evidence (6)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">AndroidManifest.xml</div>
+<div class="snip mono">uses-permission: android.permission.ACCESS_FINE_LOCATION</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">AndroidManifest.xml</div>
+<div class="snip mono">uses-permission: android.permission.READ_CONTACTS</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">AndroidManifest.xml</div>
+<div class="snip mono">uses-permission: android.permission.READ_PHONE_STATE</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">AndroidManifest.xml</div>
+<div class="snip mono">uses-permission: android.permission.READ_SMS</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">AndroidManifest.xml</div>
+<div class="snip mono">uses-permission: android.permission.RECORD_AUDIO</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">AndroidManifest.xml</div>
+<div class="snip mono">uses-permission: android.permission.REQUEST_INSTALL_PACKAGES</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <h3 style="margin-top:30px">M7 · Insufficient Binary Protections</h3>
+  <div class="sub" style="margin-bottom:8px">The shipped binary offers no resistance to inspection or tampering, making reverse engineering and repackaging cheap.</div>
+
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Low">Low</span>
+      <span class="summary-title">No anti-debugging checks were found</span>
+      <span class="summary-meta mono">BIN-NO-ANTI-DEBUG</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M7 Insufficient Binary Protections</span>
+<span class="tag">CWE-693</span><span class="tag">MASVS-RESILIENCE</span>        <span class="tag">confidence: Low</span>
+        <span class="tag">analyzer: binary</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>No runtime debugger detection was found (`Debug.isDebuggerConnected`, a TracerPid check, `ptrace`/`PT_DENY_ATTACH`). Attaching a debugger or a Frida script to a running app lets an attacker read decrypted data, change control flow and bypass client-side checks. Reported as an absent hardening measure — anti-debugging is bypassable and only raises cost.</div>
+
+      <div class="label">How to fix it</div>
+      <div>For an app protecting high-value assets, detect attached debuggers and instrumentation frameworks at runtime and report the signal to the server for risk scoring rather than only reacting on-device.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">vulnerable-demo.apk</div>
+<div class="snip mono">no anti-debugging markers found in the package</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Low">Low</span>
+      <span class="summary-title">Application code is not obfuscated</span>
+      <span class="summary-meta mono">BIN-NO-OBFUSCATION</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M7 Insufficient Binary Protections</span>
+<span class="tag">CWE-656</span><span class="tag">MASVS-RESILIENCE</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: binary</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>18 application classes carry their original names (0 look renamed, 0%), and 18 retain their source file names. The app&#39;s structure, class names and method names are therefore readable to anyone who decompiles it — which takes one command. Obfuscation is not a security control and does not protect a secret that should not be in the binary at all; it raises the cost of understanding and repackaging the app, which matters most for licensing, cloning and tamper resistance.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Enable R8 in release builds (`minifyEnabled true`) with a keep ruleset limited to what reflection genuinely needs. Verify the release APK afterwards — a keep rule that is too broad leaves the app effectively unobfuscated.</div>
+
+      <div class="label">Evidence (10)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">classes.dex</div>
+<div class="snip mono">class com.masa.vulnerable.AdminActivity</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">classes.dex</div>
+<div class="snip mono">class com.masa.vulnerable.Components</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">classes.dex</div>
+<div class="snip mono">class com.masa.vulnerable.CryptoHelper</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">classes.dex</div>
+<div class="snip mono">class com.masa.vulnerable.DeepLinkActivity</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">classes.dex</div>
+<div class="snip mono">class com.masa.vulnerable.ExportedReceiver</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">classes.dex</div>
+<div class="snip mono">class com.masa.vulnerable.ExportedService</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">classes.dex</div>
+<div class="snip mono">class com.masa.vulnerable.GuardedProvider</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">classes.dex</div>
+<div class="snip mono">class com.masa.vulnerable.LeakyProvider</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">classes.dex</div>
+<div class="snip mono">class com.masa.vulnerable.MainActivity</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">classes.dex</div>
+<div class="snip mono">class com.masa.vulnerable.NetworkHelper</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Low">Low</span>
+      <span class="summary-title">No root detection was found</span>
+      <span class="summary-meta mono">BIN-NO-ROOT-DETECTION</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M7 Insufficient Binary Protections</span>
+<span class="tag">CWE-693</span><span class="tag">MASVS-RESILIENCE</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: binary</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>No root-detection logic was found in the package (no checks for the `su` binary, known superuser packages, Magisk or Xposed). On a rooted device the app&#39;s sandbox does not hold: its private files, its memory and its runtime behaviour are all open to inspection and modification. Reported as an absent hardening measure. Root detection is bypassable by an attacker who controls the device and should never be the only thing protecting an asset — but its absence means the app cannot even tell that it is running somewhere hostile.</div>
+
+      <div class="label">How to fix it</div>
+      <div>If the app handles payments, health data or DRM, add root detection (RootBeer, or Play Integrity API on Android) and decide what to do about a positive result — often degrading a feature rather than refusing to run. Keep the server the authority: a client-side check informs risk scoring, it does not enforce anything.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">vulnerable-demo.apk</div>
+<div class="snip mono">no root-detection markers found in the package</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <h3 style="margin-top:30px">M8 · Security Misconfiguration</h3>
+  <div class="sub" style="margin-bottom:8px">Insecure defaults or debug settings left enabled in the shipped build.</div>
+
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-Critical">Critical</span>
+      <span class="summary-title">Application is marked debuggable</span>
+      <span class="summary-meta mono">MAN-DEBUGGABLE</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M8 Security Misconfiguration</span>
+<span class="tag">CWE-489</span><span class="tag">MASVS-RESILIENCE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: manifest</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>`android:debuggable=&#34;true&#34;` is set on &lt;application&gt;. On any device, anyone who can reach ADB can attach a debugger to this process, read and modify its memory, call its methods and extract whatever it holds — including keys the app decrypts at runtime. It also lets `run-as` read the app&#39;s private data directory without root.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Remove `android:debuggable` from the manifest entirely. The Android build system sets it automatically for debug builds, so it should never be written by hand in a release manifest.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">AndroidManifest.xml:19</div>
+<div class="snip mono">android:debuggable=&#34;true&#34;</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/489.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/489.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">Application data can be extracted through Android Backup</span>
+      <span class="summary-meta mono">MAN-ALLOW-BACKUP</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M8 Security Misconfiguration</span>
+<span class="tag">CWE-530</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: manifest</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>`android:allowBackup=&#34;true&#34;` is set, and no backup rules restrict what is included. Anyone with physical access and USB debugging can run `adb backup` to pull the app&#39;s private data directory off the device, and the data also flows to cloud backup. Whatever the app stores locally — session tokens, cached PII — leaves the device with it.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Set `android:allowBackup=&#34;false&#34;`, or keep backup enabled and exclude sensitive files with `android:dataExtractionRules` (API 31+) and `android:fullBackupContent`.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">AndroidManifest.xml:19</div>
+<div class="snip mono">android:allowBackup=&#34;true&#34;</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/530.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/530.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">minSdkVersion 21 keeps modern platform defaults off</span>
+      <span class="summary-meta mono">MAN-LOW-MIN-SDK</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M8 Security Misconfiguration</span>
+<span class="tag">CWE-1104</span><span class="tag">MASVS-PLATFORM</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: manifest</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The app supports API level 21. Below API 28 cleartext HTTP is permitted by default, and below API 24 the system trusts user-installed CAs for the app&#39;s traffic, which is what makes casual interception with a proxy possible. Older levels also miss scoped storage and the stricter Intent-redirection rules.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Raise `minSdkVersion` to at least 28 if the user base allows it. While supporting older levels, compensate explicitly: ship a network security config that disables cleartext and pins to the system CA store.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">AndroidManifest.xml</div>
+<div class="snip mono">android:minSdkVersion=&#34;21&#34;</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <h3 style="margin-top:30px">M9 · Insecure Data Storage</h3>
+  <div class="sub" style="margin-bottom:8px">Sensitive data written to device storage without encryption or access control, readable by other apps, by backups, or by anyone with the unlocked device.</div>
+
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-Critical">Critical</span>
+      <span class="summary-title">App data is created world-writable</span>
+      <span class="summary-meta mono">STO-WORLD-WRITABLE</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M9 Insecure Data Storage</span>
+<span class="tag">CWE-732</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: storage</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>Files or preferences are created with `MODE_WORLD_WRITEABLE`. Any other app on the device can overwrite them. If the app reads configuration, a cached URL or a serialized object back out of such a file, another app controls that input — which turns a storage permission problem into code the app trusts from an untrusted source.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Use `MODE_PRIVATE` and treat any externally-writable input as untrusted if it cannot be removed.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]</div>
+<div class="snip mono">getSharedPreferences(…, MODE_WORLD_WRITEABLE)</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/732.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/732.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">App data is created world-readable</span>
+      <span class="summary-meta mono">STO-WORLD-READABLE</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M9 Insecure Data Storage</span>
+<span class="tag">CWE-732</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: storage</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>Files or preferences are created with `MODE_WORLD_READABLE`. That drops the per-app sandbox for those files: any other application on the device can open and read them. The mode was deprecated in API 17 and throws a SecurityException from API 24 onward, so on modern devices this is both a data leak on old installs and a crash on new ones.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Use `MODE_PRIVATE`. Where data genuinely has to be shared with another app, expose it through a ContentProvider guarded by a signature permission, or a FileProvider URI grant.</div>
+
+      <div class="label">Evidence (2)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]</div>
+<div class="snip mono">getSharedPreferences(…, MODE_WORLD_READABLE)</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.StorageHelper.writeToken() [StorageHelper.java]</div>
+<div class="snip mono">openFileOutput(…, MODE_WORLD_READABLE)</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/732.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/732.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">Application writes to shared external storage</span>
+      <span class="summary-meta mono">STO-EXTERNAL-STORAGE</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M9 Insecure Data Storage</span>
+<span class="tag">CWE-922</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: storage</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The app uses external-storage APIs, including the public shared-storage roots (`getExternalStorageDirectory` / `getExternalStoragePublicDirectory`). External storage has no per-app access control: on older platform versions any app holding READ_EXTERNAL_STORAGE can read everything there, and files survive uninstall. Whether this matters depends on what is written — check the call sites listed below.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Keep anything sensitive in internal storage (`getFilesDir()`), which is sandboxed per app. If a file must be shared, write it to app-specific external storage (`getExternalFilesDir()`) and hand other apps a FileProvider URI rather than a path.</div>
+
+      <div class="label">Evidence (2)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.StorageHelper.writeToken() [StorageHelper.java]</div>
+<div class="snip mono">getExternalStorageDirectory()</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.StorageHelper.writeToken() [StorageHelper.java]</div>
+<div class="snip mono">getExternalStoragePublicDirectory()</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/922.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/922.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">Credential-shaped keys are written to unencrypted SharedPreferences</span>
+      <span class="summary-meta mono">STO-PLAINTEXT-PREFS</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M9 Insecure Data Storage</span>
+<span class="tag">CWE-312</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: Low</span>
+        <span class="tag">analyzer: storage</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The app writes to SharedPreferences, no encrypted-preferences implementation was found, and the package contains key names that suggest credentials are among the values stored: `ADMIN_PASSWORD`, `AWS_SECRET`, `GITHUB_TOKEN`, `JWT`, `auth_token`, `db_password`, `getSecret`, `google_api_key`. SharedPreferences are a plaintext XML file in the app&#39;s data directory. This rule matches on key *names*, so confirm what is actually written before acting on it.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Store tokens and passwords with `EncryptedSharedPreferences` backed by an Android Keystore key, or keep only a short-lived token in memory and re-authenticate rather than persisting a long-lived one.</div>
+
+      <div class="label">Evidence (4)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]</div>
+<div class="snip mono">SharedPreferences.putString(…)</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]</div>
+<div class="snip mono">SharedPreferences.putString(…)</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.onCreate() [MainActivity.java]</div>
+<div class="snip mono">SharedPreferences.putString(…)</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.SecureHelper.store() [SecureHelper.java]</div>
+<div class="snip mono">SharedPreferences.putString(…)</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/312.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/312.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">SQLite database is created without encryption</span>
+      <span class="summary-meta mono">STO-UNENCRYPTED-DB</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M9 Insecure Data Storage</span>
+<span class="tag">CWE-311</span><span class="tag">MASVS-STORAGE</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: storage</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The app creates SQLite databases and no encryption layer (SQLCipher or an equivalent) was found in the package. The database file sits in the app&#39;s private directory in plaintext, which protects it from other apps but not from a rooted device, an ADB backup, a forensic image, or malware that has already escalated. Whether that matters depends on what the tables hold.</div>
+
+      <div class="label">How to fix it</div>
+      <div>For data that would matter if the device were lost, encrypt at rest: SQLCipher for the database, or Jetpack Security (`EncryptedFile` / `EncryptedSharedPreferences`) with the key held in the Android Keystore so it never exists in the app&#39;s memory as raw bytes.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.StorageHelper.writeToken() [StorageHelper.java]</div>
+<div class="snip mono">SQLite database created</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/311.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/311.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <h3 style="margin-top:30px">M10 · Insufficient Cryptography</h3>
+  <div class="sub" style="margin-bottom:8px">Broken or misused cryptographic primitives that fail to provide the confidentiality or integrity the app relies on.</div>
+
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">Cipher requested without an explicit mode (defaults to ECB)</span>
+      <span class="summary-meta mono">CRY-DEFAULT-MODE</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M10 Insufficient Cryptography</span>
+<span class="tag">CWE-327</span><span class="tag">MASVS-CRYPTO</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: crypto</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>`Cipher.getInstance(&#34;AES&#34;)` is used without naming a mode. The JCA provider then picks its default, which on Android is `AES/ECB/PKCS5Padding` — so the code gets ECB without ever saying so, along with everything wrong with ECB.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Always pass a full transformation string, e.g. `Cipher.getInstance(&#34;AES/GCM/NoPadding&#34;)`.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.CryptoHelper.encryptEcb() [CryptoHelper.java]</div>
+<div class="snip mono">AES</div>        </div>
+      </div>
+
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">Block cipher used in ECB mode</span>
+      <span class="summary-meta mono">CRY-ECB-MODE</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M10 Insufficient Cryptography</span>
+<span class="tag">CWE-327</span><span class="tag">MASVS-CRYPTO</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: crypto</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>A cipher is configured for ECB mode. ECB encrypts identical plaintext blocks to identical ciphertext blocks, so structure in the data survives encryption. The classic demonstration is an encrypted bitmap in which the original image is still recognisable. ECB also provides no integrity, so an attacker can reorder or replay blocks.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Use GCM, which provides both confidentiality and integrity, with a unique nonce per encryption. If GCM is unavailable, use CBC with a random IV and authenticate the ciphertext with a separate HMAC key.</div>
+
+      <div class="label">Evidence (2)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.CryptoHelper.encryptEcb() [CryptoHelper.java]</div>
+<div class="snip mono">AES/ECB/PKCS5Padding</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.CryptoHelper.encryptDes() [CryptoHelper.java]</div>
+<div class="snip mono">DES/ECB/PKCS5Padding</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/327.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/327.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">Cryptographic key or IV appears to be hardcoded</span>
+      <span class="summary-meta mono">CRY-HARDCODED-KEY</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M10 Insufficient Cryptography</span>
+<span class="tag">CWE-321</span><span class="tag">MASVS-CRYPTO</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: crypto</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>Static fields named like key or IV material are initialised inside the shipped classes. A key compiled into the app is the same for every install and is recoverable by anyone who unpacks it, so the encryption it performs protects data from nobody who has the app. A fixed IV is a related but distinct problem: reusing an IV across messages breaks CBC&#39;s semantic security and is catastrophic in GCM, where nonce reuse leaks the authentication key.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Generate keys on the device and store them in the Android Keystore (or the iOS Keychain / Secure Enclave) so the private material never exists in the app&#39;s own bytes. Generate a fresh random IV or nonce for every encryption and transmit it alongside the ciphertext — it is not secret, but it must never repeat.</div>
+
+      <div class="label">Evidence (5)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.CryptoHelper.IV</div>
+<div class="snip mono">static field `IV` initialised in the class</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.CryptoHelper.KEY</div>
+<div class="snip mono">static field `KEY` initialised in the class</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.AWS_ACCESS_KEY</div>
+<div class="snip mono">static field `AWS_ACCESS_KEY` initialised in the class</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.MainActivity.STRIPE_KEY</div>
+<div class="snip mono">static field `STRIPE_KEY` initialised in the class</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.R$string.google_api_key</div>
+<div class="snip mono">static field `google_api_key` initialised in the class</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/321.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/321.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">SecureRandom is explicitly seeded</span>
+      <span class="summary-meta mono">CRY-SEEDED-RANDOM</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M10 Insufficient Cryptography</span>
+<span class="tag">CWE-336</span><span class="tag">MASVS-CRYPTO</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: crypto</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>`setSeed` is called on a SecureRandom instance. A correctly constructed SecureRandom is already seeded from the system entropy pool; supplying a seed can only reduce entropy, and when the seed is a constant every value the generator produces is reproducible by anyone reading the code. Keys, IVs, nonces and session identifiers derived from it become predictable.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Construct `new SecureRandom()` and use it directly without seeding. Where a deterministic stream is genuinely needed for testing, keep that path out of production builds.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.CryptoHelper.predictableRandom() [CryptoHelper.java]</div>
+<div class="snip mono">SecureRandom.setSeed(…) — replaces system entropy</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/336.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/336.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">Broken cipher algorithm in use: DES</span>
+      <span class="summary-meta mono">CRY-WEAK-CIPHER-DES</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M10 Insufficient Cryptography</span>
+<span class="tag">CWE-327</span><span class="tag">MASVS-CRYPTO</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: crypto</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The package requests the `DES` cipher. 56-bit keys are brute-forcible in hours on commodity hardware. Data encrypted with it should be treated as recoverable by anyone who obtains the ciphertext.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Use AES-256 in an authenticated mode (GCM, or CBC with a separate HMAC). Re-encrypt any stored data that was protected with the broken algorithm — changing the code does not fix ciphertext already on devices.</div>
+
+      <div class="label">Evidence (2)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.CryptoHelper.encryptDes() [CryptoHelper.java]</div>
+<div class="snip mono">DES</div>        </div>
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.CryptoHelper.encryptDes() [CryptoHelper.java]</div>
+<div class="snip mono">DES/ECB/PKCS5Padding</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/327.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/327.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding" open>
+    <summary>
+      <span class="badge sev-High">High</span>
+      <span class="summary-title">Broken cipher algorithm in use: RC4</span>
+      <span class="summary-meta mono">CRY-WEAK-CIPHER-RC4</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M10 Insufficient Cryptography</span>
+<span class="tag">CWE-327</span><span class="tag">MASVS-CRYPTO</span>        <span class="tag">confidence: High</span>
+        <span class="tag">analyzer: crypto</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The package requests the `RC4` cipher. RC4 has statistical biases that leak plaintext; prohibited by RFC 7465. Data encrypted with it should be treated as recoverable by anyone who obtains the ciphertext.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Use AES-256 in an authenticated mode (GCM, or CBC with a separate HMAC). Re-encrypt any stored data that was protected with the broken algorithm — changing the code does not fix ciphertext already on devices.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.CryptoHelper.encryptRc4() [CryptoHelper.java]</div>
+<div class="snip mono">RC4</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/327.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/327.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">Weak hash algorithm in use: MD5</span>
+      <span class="summary-meta mono">CRY-WEAK-HASH-MD5</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M10 Insufficient Cryptography</span>
+<span class="tag">CWE-328</span><span class="tag">MASVS-CRYPTO</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: crypto</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The package requests `MD5`. MD5 collisions are trivial to generate. This matters wherever the hash is relied on for integrity or identity — signature verification, tamper checks, deduplication of security-relevant data. It is not a problem where the hash is only a non-security checksum or cache key, so confirm how it is used.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Use SHA-256 or SHA-3 for integrity and identity. For password storage no plain digest is appropriate — use Argon2id, scrypt or PBKDF2 with a per-user salt and a high iteration count.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.CryptoHelper.hashPassword() [CryptoHelper.java]</div>
+<div class="snip mono">MD5</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/328.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/328.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+  <details class="finding">
+    <summary>
+      <span class="badge sev-Medium">Medium</span>
+      <span class="summary-title">Weak hash algorithm in use: SHA1</span>
+      <span class="summary-meta mono">CRY-WEAK-HASH-SHA1</span>
+    </summary>
+    <div class="body">
+      <div class="tags">
+        <span class="tag">M10 Insufficient Cryptography</span>
+<span class="tag">CWE-328</span><span class="tag">MASVS-CRYPTO</span>        <span class="tag">confidence: Medium</span>
+        <span class="tag">analyzer: crypto</span>
+      </div>
+
+      <div class="label">What was found</div>
+      <div>The package requests `SHA1`. SHA-1 collisions are practical (SHAttered, 2017). This matters wherever the hash is relied on for integrity or identity — signature verification, tamper checks, deduplication of security-relevant data. It is not a problem where the hash is only a non-security checksum or cache key, so confirm how it is used.</div>
+
+      <div class="label">How to fix it</div>
+      <div>Use SHA-256 or SHA-3 for integrity and identity. For password storage no plain digest is appropriate — use Argon2id, scrypt or PBKDF2 with a per-user salt and a high iteration count.</div>
+
+      <div class="label">Evidence (1)</div>
+      <div class="evidence">
+        <div class="ev-item">
+          <div class="loc mono">com.masa.vulnerable.CryptoHelper.hashPassword() [CryptoHelper.java]</div>
+<div class="snip mono">SHA-1</div>        </div>
+      </div>
+
+      <div class="label">References</div>
+      <ul class="refs">
+        <li>
+          <a href="https://cwe.mitre.org/data/definitions/328.html" rel="noreferrer noopener nofollow">https://cwe.mitre.org/data/definitions/328.html</a>
+        </li>
+      </ul>
+    </div>
+  </details>
+
+<h2>Scan coverage and limitations</h2>
+<div class="scroll">
+<table class="kv">
+  <tr><td>Files extracted</td><td>8</td></tr>
+  <tr><td>Bytes extracted</td><td>23,628</td></tr>
+  <tr><td>Strings analysed</td><td>270</td></tr>
+  <tr><td>Duration</td><td>0.01s</td></tr>
+</table>
+</div>
+
+<div class="label">Analysis that could not run in full</div>
+<ul class="refs"><li>apktool and jadx are not installed; using the built-in DEX and resource parsers (all analyzers still run)</li></ul>
+
+
+<div class="label">How the risk score is calculated</div>
+<div class="sub">Each finding contributes its severity weight (Critical 10, High 7, Medium 4, Low 1.5, Info 0) multiplied by a confidence factor (High 1.0, Medium 0.7, Low 0.4). A single rule contributes at most three times its unit weight, so one noisy rule cannot dominate. The total is mapped to 0-100 through 100 x (1 - e^(-total/30)), which saturates: the score is a communication device for ordering and triage, not a measurement of real-world risk.
+</div>
+
+<div class="label">What this analysis does not cover</div>
+<div class="sub">
+  This is static analysis only: the package was decompiled and pattern-matched, never
+  executed. It cannot observe runtime behaviour, actual network traffic, server-side
+  controls, or logic that is assembled dynamically or loaded after install. Native
+  libraries, obfuscated code and reflective calls limit what static rules can see.
+  Absence of a finding is not evidence of absence of a vulnerability.
+</div>
+
+<footer>
+  Generated by mobile-app-security-analyzer 1.0.0 ·
+  2026-09-07 00:04:09 UTC · all analysis performed locally; no package contents were transmitted.
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,60 @@
+name: Bug report
+description: The analyzer crashed, refused a valid package, or behaved incorrectly.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please do not attach a package you are not authorised to share.
+        A redacted `masa scan --format json` excerpt is usually enough.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: Include the exact command and the full output or traceback.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `masa version`.
+      placeholder: mobile-app-security-analyzer 1.0.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Package platform
+      options: [Android (APK), iOS (IPA), Not package-specific]
+    validations:
+      required: true
+
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: OS, Python version, and whether you ran it in the Docker image.
+      placeholder: macOS 15.6, Python 3.13, host install
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: tools
+    attributes:
+      label: External decompilers present
+      options:
+        - label: apktool
+        - label: jadx
+        - label: class-dump
